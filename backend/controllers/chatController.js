@@ -1,6 +1,6 @@
 // NOTE: folder name currently includes a trailing space: "chat "
 // so the import path must match exactly.
-import { chatWithTutor as chatWithTutorService } from "../services/chat /chatService.js";
+import { chatWithTutor as chatWithTutorService } from "../services/chatService.js";
 import ChatMessage from "../models/ChatMessage.js";
 
 // Controller: chat with tutor
