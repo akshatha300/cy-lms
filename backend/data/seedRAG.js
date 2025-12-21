@@ -1,0 +1,32 @@
+import fs from "fs";
+import path from "path";
+import mongoose from "mongoose";
+import DocEmbedding from "../models/DocEmbedding.js";
+import { generateEmbedding } from "../services/embeddingService.js";
+import connectDB from "../config/db.js";
+
+const docsPath = path.join(process.cwd(), "data/cybersecurity_docs");
+
+const seed = async () => {
+  await connectDB();
+  await DocEmbedding.deleteMany({});
+
+  const files = fs.readdirSync(docsPath);
+  for (let file of files) {
+    const text = fs.readFileSync(path.join(docsPath, file), "utf8");
+    const embedding = await generateEmbedding(text);
+
+    await DocEmbedding.create({
+      text,
+      embedding,
+      metadata: { filename: file }
+    });
+
+    console.log(`Embedded: ${file}`);
+  }
+
+  console.log("RAG data loaded.");
+  process.exit(0);
+};
+
+seed();
