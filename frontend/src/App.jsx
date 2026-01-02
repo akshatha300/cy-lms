@@ -9,16 +9,23 @@ import ModuleDetail from "./pages/user/ModuleDetail";
 import ChatTutor from "./pages/user/ChatTutor";
 import Progress from "./pages/user/Progress";
 
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ManageUsers from "./pages/admin/ManageUsers";
+import ManageModules from "./pages/admin/ManageModules";
+import ManageQuestions from "./pages/admin/ManageQuestions";
+import Logs from "./pages/admin/Logs";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
+import AdminLayout from "./layouts/AdminLayout";
 
 function App() {
   return (
     <Routes>
       {/* Public routes */}
-      <Route path="/" element={<Register />} />
+      <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Navigate to="/" replace />} />
+      <Route path="/register" element={<Register />} />
 
       {/* Protected routes */}
       <Route
@@ -34,6 +41,22 @@ function App() {
         <Route path="modules/:id" element={<ModuleDetail />} />
         <Route path="chat" element={<ChatTutor />} />
         <Route path="progress" element={<Progress />} />
+      </Route>
+
+      {/* Admin routes */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<AdminDashboard />} />
+        <Route path="users" element={<ManageUsers />} />
+        <Route path="modules" element={<ManageModules />} />
+        <Route path="questions" element={<ManageQuestions />} />
+        <Route path="logs" element={<Logs />} />
       </Route>
 
       {/* Fallback */}

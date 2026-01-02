@@ -102,7 +102,7 @@ export const deleteModule = async (req, res) => {
     }
     const mod = await Module.findById(req.params.id);
     if (!mod) return res.status(404).json({ message: "Module not found" });
-    await mod.remove();
+    await mod.deleteOne();
     res.json({ message: "Module removed" });
   } catch (err) {
     console.error("deleteModule error:", err);
@@ -136,7 +136,7 @@ export const adminDeleteModule = async (req, res) => {
   try {
     const mod = await Module.findById(req.params.id);
     if (!mod) return res.status(404).json({ message: "Module not found" });
-    await mod.remove();
+    await mod.deleteOne();
     res.json({ message: "Module deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });

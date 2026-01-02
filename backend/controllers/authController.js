@@ -59,9 +59,18 @@ export const updateUser = asyncHandler(async (req, res) => {
 
   let user = await User.findOne({ userId: Number(userId) });
   if (user) {
-    Object.assign(user, { name, email, role, avatarUrl, bio, ...(password && { password }) });
+    if (name !== undefined) user.name = name;
+    if (email !== undefined) user.email = email.toLowerCase();
+    if (role !== undefined) user.role = role;
+    if (avatarUrl !== undefined) user.avatarUrl = avatarUrl;
+    if (bio !== undefined) user.bio = bio;
+    if (password) user.password = password;
     await user.save();
   } else {
+    if (!name || !email) {
+      res.status(400);
+      throw new Error("name and email are required for new users");
+    }
     user = new User({ name, email, role, avatarUrl, bio, ...(password && { password }) });
     await user.save();
   }

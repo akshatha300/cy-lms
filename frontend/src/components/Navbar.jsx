@@ -18,8 +18,11 @@ const Navbar = () => {
       <h3>Cyber LMS</h3>
 
       <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-        <Link to="/" style={{ color: "white" }}>
+        <Link to="/app" style={{ color: "white" }}>
           Dashboard
+        </Link>
+        <Link to="/admin" style={{ color: "white" }}>
+          Admin
         </Link>
         <span>{user?.email}</span>
         <button onClick={logout}>Logout</button>

@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 
-const Sidebar = () => {
+const AdminSidebar = () => {
   const linkStyle = ({ isActive }) => ({
     display: "block",
     padding: "10px 15px",
@@ -13,29 +13,33 @@ const Sidebar = () => {
   return (
     <aside
       style={{
-        width: "220px",
-        background: "#111827",
+        width: "240px",
+        background: "#0f172a",
         color: "white",
-        padding: "15px",
+        padding: "16px",
         minHeight: "calc(100vh - 50px)",
       }}
     >
+      <h4 style={{ marginBottom: "12px" }}>Admin</h4>
       <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <NavLink to="/app" end style={linkStyle}>
-          Dashboard
+        <NavLink to="/admin" end style={linkStyle}>
+          Overview
         </NavLink>
-        <NavLink to="/app/modules" style={linkStyle}>
+        <NavLink to="/admin/users" style={linkStyle}>
+          Users
+        </NavLink>
+        <NavLink to="/admin/modules" style={linkStyle}>
           Modules
         </NavLink>
-        <NavLink to="/app/chat" style={linkStyle}>
-          Chat Tutor
+        <NavLink to="/admin/questions" style={linkStyle}>
+          Questions
         </NavLink>
-        <NavLink to="/app/progress" style={linkStyle}>
-          Progress
+        <NavLink to="/admin/logs" style={linkStyle}>
+          Logs
         </NavLink>
       </nav>
     </aside>
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;

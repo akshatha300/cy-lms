@@ -1,5 +1,5 @@
 import express from "express";
-import { getMe, updateMe } from "../controllers/userController.js";
+import { listUsers, getMe, updateMe } from "../controllers/userController.js";
 import { registerUser, loginUser, updateUser, deleteUser } from "../controllers/authController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { isAdmin } from "../middleware/adminMiddleware.js";
@@ -10,6 +10,9 @@ const router = express.Router();
 router.get("/me", protect, getMe);
 router.put("/me", protect, updateMe);
 
+// Admin: list users
+router.get("/", protect, isAdmin, listUsers);
+
 // Public routes
 router.post("/register", registerUser);
 router.post("/login", loginUser);
@@ -19,10 +22,4 @@ router.put("/:userId", protect, isAdmin, updateUser);
 router.delete("/:userId", protect, isAdmin, deleteUser);
 
 export default router;
-import { getUserById, updateUserById, deleteUserById } from "../controllers/userController.js";
-
-
-router.get("/:userId", getUserById);
-router.put("/:userId", updateUserById);
-router.delete("/:userId", deleteUserById);
 

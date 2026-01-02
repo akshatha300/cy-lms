@@ -174,7 +174,7 @@ const Dashboard = () => {
                 Learning Modules
               </h3>
               <Link 
-                to="/modules" 
+                to="/app/modules" 
                 className="text-sm text-blue-600 hover:text-blue-800 font-medium"
               >
                 View All
@@ -208,33 +208,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <Link 
-              to="/modules" 
-              className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
-            >
-              <BookOpen className="w-8 h-8 mx-auto mb-3" />
-              <h3 className="font-bold">Browse Modules</h3>
-              <p className="text-sm opacity-90">Explore all courses</p>
-            </Link>
-            <Link 
-              to="/progress" 
-              className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
-            >
-              <Target className="w-8 h-8 mx-auto mb-3" />
-              <h3 className="font-bold">View Progress</h3>
-              <p className="text-sm opacity-90">Track your learning</p>
-            </Link>
-            <Link 
-              to="/chat" 
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
-            >
-              <Activity className="w-8 h-8 mx-auto mb-3" />
-              <h3 className="font-bold">Chat Tutor</h3>
-              <p className="text-sm opacity-90">Get AI help</p>
-            </Link>
-          </div>
         </div>
       </div>
     </div>

@@ -56,7 +56,7 @@ const Modules = () => {
               <p style={{ margin: "0 0 8px", fontSize: "0.9rem" }}>
                 Difficulty: {mod.difficulty ?? 1}
               </p>
-              <Link to={`/modules/${mod._id}`} style={{ color: "#2563eb" }}>
+              <Link to={`/app/modules/${mod._id}`} style={{ color: "#2563eb" }}>
                 Start module
               </Link>
             </li>

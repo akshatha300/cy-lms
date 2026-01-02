@@ -25,4 +25,22 @@ export const submitQuestionAttempt = async (payload) => {
   return response.data;
 };
 
+// Admin: create a module with optional materials
+export const createModule = async (payload) => {
+  const response = await axiosClient.post("/modules", payload);
+  return response.data;
+};
+
+// Admin: update a module (materials, metadata)
+export const updateModule = async (id, payload) => {
+  const response = await axiosClient.put(`/modules/${id}`, payload);
+  return response.data;
+};
+
+// Admin: delete a module
+export const deleteModule = async (id) => {
+  const response = await axiosClient.delete(`/modules/${id}`);
+  return response.data;
+};
+
 

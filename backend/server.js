@@ -6,12 +6,14 @@ import authRoutes from "./routes/authRoutes.js";
 import moduleRoutes from "./routes/moduleRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import ragRoutes from "./routes/ragRoutes.js";
+import logRoutes from "./routes/logRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 import progressRoutes from "./routes/progressRoutes.js";
 import questionRoutes from "./routes/QuestionRoutes.js";
 import attemptRoutes from "./routes/attemptRoutes.js";
 import adaptiveRoutes from "./routes/adaptiveroutes.js";
+import certificateRoutes from "./routes/certificateRoutes.js";
 
 
 
@@ -29,10 +31,12 @@ app.use("/api/auth", authRoutes);
 app.use("/api/modules", moduleRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/rag", ragRoutes);
+app.use("/api/logs", logRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/attempts", attemptRoutes);
 app.use("/api/adaptive", adaptiveRoutes);
+app.use("/api/certificates", certificateRoutes);
 
 
 app.get("/", (req, res) => {

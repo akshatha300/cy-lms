@@ -1,15 +1,9 @@
 import { getEmbedding } from "./embeddingService.js";
 import { searchLocalRag } from "./localRagIndex.js";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import fetch from "node-fetch";
 
 const RAG_TOP_K = Number(process.env.RAG_TOP_K || 6);
 const RAG_MAX_CONTEXT_CHARS = Number(process.env.RAG_MAX_CONTEXT_CHARS || 8000);
-
-let geminiModel = null;
-if (process.env.GEMINI_API_KEY) {
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  geminiModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-}
 
 const buildContextString = (results) => {
   const pieces = [];
@@ -61,10 +55,10 @@ export const answerWithRAG = async (query, history = []) => {
 
     const contextString = buildContextString(results);
 
-    // If we don't have a model, return a simple, friendly answer using any context we have.
-    if (!geminiModel) {
+    // If we don't have Groq API key, return context with fallback message
+    if (!process.env.GROQ_API_KEY) {
       const base =
-        "Here's what I can share based on my built‑in cybersecurity knowledge.";
+        "Here's what I can share based on my built-in cybersecurity knowledge.";
       const withContext =
         contextString && contextString.trim().length > 0
           ? `${base}\n\nHere are some relevant excerpts from your course materials:\n\n${contextString}`
@@ -76,19 +70,16 @@ export const answerWithRAG = async (query, history = []) => {
       };
     }
 
-    // 3. Build Gemini prompt
+    // 3. Build RAG prompt for Groq
     const conversation = Array.isArray(history)
       ? history.join("\n")
       : String(history || "");
 
-//     const prompt = `You are a helpful cybersecurity tutor for an LMS.
-// Use ONLY the context from the student's course materials below to answer.
-// If the context does not contain the answer, say you are not sure and suggest
-// which module or topic they should review.
+    const prompt = `You are a helpful cybersecurity tutor for an LMS.
+Use the context from the student's course materials below to answer their question.
+If the context doesn't contain the answer, say you're not sure and suggest which module or topic they should review.
 
-    const prompt = `You are a friend of mine.
-
-CONTEXT:
+CONTEXT FROM COURSE MATERIALS:
 ${contextString}
 
 CONVERSATION SO FAR:
@@ -99,9 +90,42 @@ ${trimmed}
 
 Respond in a friendly, clear way that a learner can understand.`;
 
-    // 4. Call Gemini
-    const result = await geminiModel.generateContent(prompt);
-    const text = result.response.text();
+    // 4. Call Groq API
+    const model = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a helpful cybersecurity tutor using course materials to answer student questions.",
+            },
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          temperature: 0.4,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Groq API error:", response.status, errText);
+      throw new Error(`Groq API returned status ${response.status}`);
+    }
+
+    const data = await response.json();
+    const text = data.choices?.[0]?.message?.content || "";
 
     const finalAnswer =
       (text || "").trim() ||

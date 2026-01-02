@@ -6,6 +6,10 @@ export const updateDifficulty = async (req, res) => {
     const { isCorrect } = req.body;
     const userId = req.user._id;
 
+    if (typeof isCorrect !== "boolean") {
+      return res.status(400).json({ message: "isCorrect must be boolean" });
+    }
+
     let progress = await Progress.findOne({ userId });
 
     if (!progress) {
@@ -16,8 +20,15 @@ export const updateDifficulty = async (req, res) => {
     }
 
     const newDifficulty = calculateNewDifficulty(progress.currentDifficulty, isCorrect);
-
     progress.currentDifficulty = newDifficulty;
+    progress.attemptsCount += 1;
+    progress.totalCorrect += isCorrect ? 1 : 0;
+    progress.totalWrong += isCorrect ? 0 : 1;
+    progress.streak = isCorrect ? progress.streak + 1 : 0;
+    progress.accuracy = progress.attemptsCount
+      ? Math.round((progress.totalCorrect / progress.attemptsCount) * 100)
+      : 0;
+    progress.lastActiveAt = new Date();
     await progress.save();
 
     res.json({ newDifficulty });

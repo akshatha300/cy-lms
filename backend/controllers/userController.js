@@ -1,6 +1,14 @@
 import User from "../models/User.js";
 import asyncHandler from "express-async-handler";
 
+// List all users (admin)
+export const listUsers = asyncHandler(async (req, res) => {
+  const users = await User.find()
+    .select("userId name email role avatarUrl bio createdAt")
+    .sort({ createdAt: -1 });
+  res.json(users);
+});
+
 // Get logged-in user
 export const getMe = asyncHandler(async (req, res) => {
   const user = await User.findOne({ userId: req.user.userId });
