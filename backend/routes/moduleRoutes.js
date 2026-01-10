@@ -2,6 +2,7 @@ import express from "express";
 import {
   createModule,
   getModules,
+  getRoleModules,
   getModuleById,
   updateModule,
   deleteModule,
@@ -10,6 +11,9 @@ import { protect } from "../middleware/authMiddleware.js";
 import { isAdmin } from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
+
+// GET modules filtered by user's role
+router.get("/role-filtered", protect, getRoleModules);
 
 // GET all modules (protected)
 router.get("/", protect, getModules);

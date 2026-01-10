@@ -24,8 +24,14 @@ const Sidebar = () => {
         <NavLink to="/app" end style={linkStyle}>
           Dashboard
         </NavLink>
+        <NavLink to="/app/roles" style={linkStyle}>
+          Career Roles
+        </NavLink>
         <NavLink to="/app/modules" style={linkStyle}>
           Modules
+        </NavLink>
+        <NavLink to="/app/labs" style={linkStyle}>
+          Labs
         </NavLink>
         <NavLink to="/app/chat" style={linkStyle}>
           Chat Tutor

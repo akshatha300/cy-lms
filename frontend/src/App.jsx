@@ -8,6 +8,10 @@ import Modules from "./pages/user/Modules";
 import ModuleDetail from "./pages/user/ModuleDetail";
 import ChatTutor from "./pages/user/ChatTutor";
 import Progress from "./pages/user/Progress";
+import Roles from "./pages/user/Roles";
+import RoleSelector from "./components/RoleSelector";
+import RoleDashboard from "./pages/user/RoleDashboard";
+import LabsPage from "./pages/user/LabsPage";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageUsers from "./pages/admin/ManageUsers";
@@ -41,6 +45,11 @@ function App() {
         <Route path="modules/:id" element={<ModuleDetail />} />
         <Route path="chat" element={<ChatTutor />} />
         <Route path="progress" element={<Progress />} />
+        <Route path="roles" element={<Roles />} />
+        <Route path="role-selector" element={<RoleSelector />} />
+        <Route path="role-dashboard/:roleId" element={<RoleDashboard />} />
+        <Route path="labs" element={<LabsPage />} />
+        <Route path="labs/:roleId" element={<LabsPage />} />
       </Route>
 
       {/* Admin routes */}

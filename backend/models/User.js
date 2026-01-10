@@ -11,6 +11,23 @@ const userSchema = new mongoose.Schema(
     avatarUrl: { type: String, default: "" },
     bio: { type: String, default: "" },
     userId: { type: Number, unique: true, index: true },
+    // Role-based learning path (NEW - optional)
+    primaryRole: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SecurityRole",
+      default: null,
+    },
+    selectedRoles: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "SecurityRole",
+      },
+    ],
+    preferredCareerPath: {
+      type: String,
+      default: null,
+      // e.g., "soc", "pentest", "cloud", "governance"
+    },
   },
   { timestamps: true }
 );

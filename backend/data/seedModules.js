@@ -30,6 +30,18 @@ const modules = [
     description: "Detect human manipulation techniques used by attackers.",
     difficulty: 2,
     tags: ["social-engineering"]
+  },
+  {
+    title: "Data Protection & Privacy",
+    description: "Learn best practices for protecting sensitive data and understanding privacy regulations like GDPR.",
+    difficulty: 2,
+    tags: ["data-protection", "privacy", "gdpr"]
+  },
+  {
+    title: "Network Security Fundamentals",
+    description: "Explore firewalls, VPNs, encryption, and secure network architecture.",
+    difficulty: 3,
+    tags: ["network-security", "encryption", "vpn"]
   }
 ];
 

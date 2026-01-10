@@ -6,6 +6,12 @@ export const getModules = async () => {
   return response.data;
 };
 
+// Get modules filtered by user's selected role
+export const getRoleModules = async () => {
+  const response = await axiosClient.get("/modules/role-filtered");
+  return response.data;
+};
+
 // Get a single module by id
 export const getModuleById = async (id) => {
   const response = await axiosClient.get(`/modules/${id}`);

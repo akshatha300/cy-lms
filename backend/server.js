@@ -14,9 +14,12 @@ import questionRoutes from "./routes/QuestionRoutes.js";
 import attemptRoutes from "./routes/attemptRoutes.js";
 import adaptiveRoutes from "./routes/adaptiveroutes.js";
 import certificateRoutes from "./routes/certificateRoutes.js";
-
-
-
+import adminRoutes from "./routes/adminRoutes.js";
+import roleRoutes from "./routes/roleRoutes.js";
+import skillRoutes from "./routes/skillRoutes.js";
+import skillProgressRoutes from "./routes/skillProgressRoutes.js";
+import jobReadinessRoutes from "./routes/jobReadinessRoutes.js";
+import labRoutes from "./routes/labRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -37,7 +40,12 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/attempts", attemptRoutes);
 app.use("/api/adaptive", adaptiveRoutes);
 app.use("/api/certificates", certificateRoutes);
-
+app.use("/api/admin", adminRoutes);
+app.use("/api/roles", roleRoutes);
+app.use("/api/skills", skillRoutes);
+app.use("/api/skill-progress", skillProgressRoutes);
+app.use("/api/job-readiness", jobReadinessRoutes);
+app.use("/api/labs", labRoutes);
 
 app.get("/", (req, res) => {
   res.send("Cybersecurity LMS Backend Running");

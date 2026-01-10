@@ -52,6 +52,57 @@ export const getModules = async (req, res) => {
 };
 
 /**
+ * Get modules for user's selected role
+ */
+export const getRoleModules = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const User = (await import("../models/User.js")).default;
+    const Skill = (await import("../models/Skill.js")).default;
+    const SecurityRole = (await import("../models/SecurityRole.js")).default;
+
+    const user = await User.findById(userId).populate("primaryRole");
+    
+    if (!user.primaryRole) {
+      // No role selected, return all modules
+      const modules = await Module.find().sort({ difficulty: 1, createdAt: -1 });
+      return res.json({ modules, roleFiltered: false, roleName: null });
+    }
+
+    const role = await SecurityRole.findById(user.primaryRole).populate("requiredSkills");
+    
+    if (!role) {
+      const modules = await Module.find().sort({ difficulty: 1, createdAt: -1 });
+      return res.json({ modules, roleFiltered: false, roleName: null });
+    }
+
+    // Get all skills for this role
+    const skills = await Skill.find({ _id: { $in: role.requiredSkills } }).populate("requiredModules");
+    
+    // Extract unique module IDs
+    const moduleIds = new Set();
+    skills.forEach((skill) => {
+      skill.requiredModules.forEach((mod) => {
+        if (mod && mod._id) moduleIds.add(mod._id.toString());
+      });
+    });
+
+    // Fetch those modules
+    const modules = await Module.find({ _id: { $in: Array.from(moduleIds) } }).sort({ difficulty: 1, createdAt: -1 });
+    
+    res.json({ 
+      modules, 
+      roleFiltered: true, 
+      roleName: role.name,
+      totalSkills: skills.length 
+    });
+  } catch (err) {
+    console.error("getRoleModules error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/**
  * Get single module by id
  */
 export const getModuleById = async (req, res) => {
