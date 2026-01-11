@@ -162,17 +162,29 @@ const ManageQuestions = () => {
 				<label>
 					Select module
 					<select
-						value={selectedModuleId}
-						onChange={(e) => setSelectedModuleId(e.target.value)}
-						style={{ marginLeft: "8px", padding: "6px" }}
-					>
-						<option value="">-- choose --</option>
-						{modules.map((m) => (
-							<option key={m._id} value={m._id}>
-								{m.title}
-							</option>
-						))}
-					</select>
+  value={selectedModuleId}
+  onChange={(e) => setSelectedModuleId(e.target.value)}
+  style={{
+    marginLeft: "8px",
+    padding: "8px 12px",
+    borderRadius: "6px",
+    border: "1px solid #d1d5db",
+    backgroundColor: "#ffffff",
+    color: "#1f2937",
+    fontSize: "14px",
+    minWidth: "300px",
+    cursor: "pointer",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)"
+  }}
+>
+  <option value="">-- choose --</option>
+  {modules.map((m) => (
+    <option key={m._id} value={m._id} style={{ color: "#1f2937" }}>
+      {m.title}
+    </option>
+  ))}
+</select>
+				
 				</label>
 			</div>
 
@@ -224,17 +236,26 @@ const ManageQuestions = () => {
 								style={{ width: "100%", padding: "8px", marginTop: "4px" }}
 							/>
 						</label>
-						<label>
-							Difficulty
-							<input
-								type="number"
-								min={1}
-								max={5}
-								value={form.difficulty}
-								onChange={(e) => setForm((p) => ({ ...p, difficulty: e.target.value }))}
-								style={{ width: "100%", padding: "8px", marginTop: "4px" }}
-							/>
-						</label>
+						<select
+  value={form.type}
+  onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))}
+  style={{
+    width: "100%",
+    padding: "8px 12px",
+    borderRadius: "6px",
+    border: "1px solid #d1d5db",
+    backgroundColor: "#ffffff",
+    color: "#1f2937",
+    fontSize: "14px",
+    cursor: "pointer",
+    marginTop: "4px",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)"
+  }}
+>
+  <option value="mcq">Multiple choice</option>
+  <option value="short">Short answer</option>
+  <option value="ai_generated">AI generated</option>
+</select>
 						<label>
 							Type
 							<select
