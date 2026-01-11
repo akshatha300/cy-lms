@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { MessageSquare, X, Send, Loader2, Minimize2 } from "lucide-react";
+import { MessageSquare, X, Send, Loader2, Minimize2, Bot, User } from "lucide-react";
 import { sendChatMessage, fetchChatHistory } from "../api/chatApi";
 import useAuth from "../hooks/useAuth";
 
@@ -118,18 +118,28 @@ const FloatingChatbot = () => {
           position: "fixed",
           bottom: "24px",
           right: "24px",
-          width: "64px",
-          height: "64px",
+          width: "60px",
+          height: "60px",
           borderRadius: "50%",
-          background: "linear-gradient(135deg, #2563eb 0%, #9333ea 100%)",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
           color: "white",
           border: "none",
           cursor: "pointer",
-          boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
+          boxShadow: "0 8px 32px rgba(102, 126, 234, 0.4)",
           zIndex: 9999,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          transition: "all 0.3s ease",
+          transform: "scale(1)",
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.transform = "scale(1.1)";
+          e.target.style.boxShadow = "0 12px 40px rgba(102, 126, 234, 0.6)";
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.transform = "scale(1)";
+          e.target.style.boxShadow = "0 8px 32px rgba(102, 126, 234, 0.4)";
         }}
         aria-label="Open chat"
       >
@@ -141,35 +151,99 @@ const FloatingChatbot = () => {
   console.log("🟢 Rendering chat window (open state)");
   return (
     <div
-      className={`fixed bottom-6 right-6 bg-white rounded-2xl shadow-2xl z-[9999] transition-all duration-300 ${
-        isMinimized ? "w-80 h-16" : "w-96 h-[600px]"
-      } flex flex-col border border-gray-200`}
+      style={{
+        position: "fixed",
+        bottom: "24px",
+        right: "24px",
+        width: isMinimized ? "320px" : "420px",
+        height: isMinimized ? "64px" : "640px",
+        background: "white",
+        borderRadius: "16px",
+        boxShadow: "0 20px 60px rgba(0, 0, 0, 0.15)",
+        zIndex: 9999,
+        display: "flex",
+        flexDirection: "column",
+        border: "1px solid rgba(0, 0, 0, 0.1)",
+        overflow: "hidden",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      }}
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-t-2xl flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-            <MessageSquare className="w-5 h-5" />
+      <div
+        style={{
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          color: "white",
+          padding: "16px 20px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderRadius: "16px 16px 0 0",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div
+            style={{
+              width: "40px",
+              height: "40px",
+              background: "rgba(255, 255, 255, 0.2)",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            <Bot style={{ width: "20px", height: "20px" }} />
           </div>
           <div>
-            <h3 className="font-bold text-sm">AI Cybersecurity Tutor</h3>
-            <p className="text-xs text-blue-100">Always here to help</p>
+            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>
+              AI Cybersecurity Tutor
+            </h3>
+            <p style={{ margin: 0, fontSize: "12px", opacity: 0.9 }}>
+              Always here to help
+            </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <button
             onClick={() => setIsMinimized(!isMinimized)}
-            className="hover:bg-white/20 p-1.5 rounded-lg transition"
+            style={{
+              background: "rgba(255, 255, 255, 0.2)",
+              border: "none",
+              borderRadius: "8px",
+              padding: "6px",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = "rgba(255, 255, 255, 0.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = "rgba(255, 255, 255, 0.2)";
+            }}
             aria-label="Minimize"
           >
-            <Minimize2 className="w-4 h-4" />
+            <Minimize2 style={{ width: "16px", height: "16px" }} />
           </button>
           <button
             onClick={() => setIsOpen(false)}
-            className="hover:bg-white/20 p-1.5 rounded-lg transition"
+            style={{
+              background: "rgba(255, 255, 255, 0.2)",
+              border: "none",
+              borderRadius: "8px",
+              padding: "6px",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = "rgba(255, 255, 255, 0.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = "rgba(255, 255, 255, 0.2)";
+            }}
             aria-label="Close chat"
           >
-            <X className="w-4 h-4" />
+            <X style={{ width: "16px", height: "16px" }} />
           </button>
         </div>
       </div>
@@ -177,32 +251,101 @@ const FloatingChatbot = () => {
       {/* Messages */}
       {!isMinimized && (
         <>
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+          <div
+            style={{
+              flex: 1,
+              overflowY: "auto",
+              padding: "20px",
+              background: "linear-gradient(to bottom, #f8fafc, #f1f5f9)",
+            }}
+          >
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex ${
-                  msg.role === "user" ? "justify-end" : "justify-start"
-                }`}
+                style={{
+                  display: "flex",
+                  justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+                  marginBottom: "16px",
+                }}
               >
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
-                    msg.role === "user"
-                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                      : "bg-white text-gray-800 shadow-sm border border-gray-100"
-                  }`}
+                  style={{
+                    maxWidth: "85%",
+                    padding: "12px 16px",
+                    borderRadius: msg.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
+                    background: msg.role === "user"
+                      ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                      : "white",
+                    color: msg.role === "user" ? "white" : "#1f2937",
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                    position: "relative",
+                  }}
                 >
                   {msg.role === "assistant" && (
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-5 h-5 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">AI</span>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        marginBottom: "8px",
+                        fontSize: "12px",
+                        fontWeight: "500",
+                        color: "#6b7280",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Bot style={{ width: "12px", height: "12px", color: "white" }} />
                       </div>
-                      <span className="text-xs font-semibold text-gray-600">
-                        Tutor
-                      </span>
+                      <span>AI Tutor</span>
                     </div>
                   )}
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                  {msg.role === "user" && (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        marginBottom: "8px",
+                        fontSize: "12px",
+                        fontWeight: "500",
+                        color: "rgba(255, 255, 255, 0.9)",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <span>You</span>
+                      <div
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          background: "rgba(255, 255, 255, 0.2)",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <User style={{ width: "12px", height: "12px", color: "white" }} />
+                      </div>
+                    </div>
+                  )}
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "14px",
+                      lineHeight: "1.5",
+                      whiteSpace: "pre-wrap",
+                    }}
+                  >
                     {msg.text}
                   </p>
                 </div>
@@ -210,12 +353,20 @@ const FloatingChatbot = () => {
             ))}
 
             {loading && (
-              <div className="flex justify-start">
-                <div className="bg-white rounded-2xl px-4 py-3 shadow-sm border border-gray-100">
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                    <span className="text-sm text-gray-600">Thinking...</span>
-                  </div>
+              <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: "16px" }}>
+                <div
+                  style={{
+                    background: "white",
+                    borderRadius: "18px 18px 18px 4px",
+                    padding: "12px 16px",
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  <Loader2 style={{ width: "16px", height: "16px", color: "#667eea", animation: "spin 1s linear infinite" }} />
+                  <span style={{ fontSize: "14px", color: "#6b7280" }}>Thinking...</span>
                 </div>
               </div>
             )}
@@ -224,28 +375,71 @@ const FloatingChatbot = () => {
           </div>
 
           {/* Input */}
-          <div className="p-4 bg-white border-t border-gray-200 rounded-b-2xl">
-            <div className="flex gap-2">
+          <div
+            style={{
+              padding: "16px 20px",
+              background: "white",
+              borderTop: "1px solid #e5e7eb",
+              borderRadius: "0 0 16px 16px",
+            }}
+          >
+            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
               <input
                 ref={inputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask me anything..."
+                placeholder="Ask me anything about cybersecurity..."
                 disabled={loading}
-                className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                                style={{
+                  flex: 1,
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "12px",
+                  padding: "12px 16px",
+                  fontSize: "14px",
+                  outline: "none",
+                  transition: "all 0.2s ease",
+                  background: "#f9fafb",
+                  color: "#1f2937",
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = "#667eea";
+                  e.target.style.background = "white";
+                  e.target.style.color = "#1f2937";
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "#e5e7eb";
+                  e.target.style.background = "#f9fafb";
+                  e.target.style.color = "#1f2937";
+                }}
+                // Add placeholder styling
+                placeholderStyle={{ color: "#9ca3af" }}
+                              
               />
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || loading}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-2.5 rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  background: !input.trim() || loading 
+                    ? "#e5e7eb" 
+                    : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "12px",
+                  padding: "12px",
+                  cursor: !input.trim() || loading ? "not-allowed" : "pointer",
+                  transition: "all 0.2s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
                 aria-label="Send message"
               >
-                <Send className="w-5 h-5" />
+                <Send style={{ width: "16px", height: "16px" }} />
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-2 text-center">
+            <p style={{ margin: "8px 0 0 0", fontSize: "11px", color: "#9ca3af", textAlign: "center" }}>
               Press Enter to send • Shift+Enter for new line
             </p>
           </div>
