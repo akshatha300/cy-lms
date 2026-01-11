@@ -114,17 +114,23 @@ const seedData = async () => {
       },
     ];
 
-    console.log(`📚 Creating ${skillsData.length} skills...`);
-    const createdSkills = await Skill.insertMany(skillsData, { ordered: false }).catch(
-      (err) => {
-        // Handle duplicate key errors gracefully
-        if (err.code === 11000) {
-          console.warn("⚠️  Some skills already exist, continuing...");
-          return skillsData.map((skill) => new Skill(skill));
-        }
+    
+        console.log(`📚 Creating ${skillsData.length} skills...`);
+    let createdSkills;
+    try {
+      createdSkills = await Skill.insertMany(skillsData, { ordered: false });
+    } catch (err) {
+      if (err.code === 11000) {
+        console.warn("⚠️  Some skills already exist, fetching existing skills...");
+        // Get all existing skills by name
+        const skillNames = skillsData.map(s => s.name);
+        createdSkills = await Skill.find({ name: { $in: skillNames } });
+      } else {
         throw err;
       }
-    );
+    }
+
+    console.log(`✅ Created/found ${createdSkills.length} skills\n`);
 
     console.log(`✅ Created/found ${createdSkills.length} skills\n`);
 
@@ -210,6 +216,95 @@ const seedData = async () => {
           )
           .map((s) => s._id),
       },
+           {
+        name: "Security Auditor",
+        description: "Conduct comprehensive security assessments, ensure compliance, identify gaps",
+        seniority: "mid",
+        requiredLabCount: 12,
+        estimatedHoursToComplete: 120,
+        tags: ["governance", "compliance", "assessment"],
+        requiredSkills: createdSkills
+          .filter((s) =>
+            [
+              "Vulnerability Assessment",
+              "Network Traffic Analysis",
+              "Log Analysis",
+              "IAM (Identity & Access Management)",
+            ].includes(s.name)
+          )
+          .map((s) => s._id),
+      },
+      {
+        name: "Security Architect",
+        description: "Design secure systems, create security frameworks, lead security strategy",
+        seniority: "senior",
+        requiredLabCount: 15,
+        estimatedHoursToComplete: 150,
+        tags: ["architecture", "strategy", "leadership"],
+        requiredSkills: createdSkills
+          .filter((s) =>
+            [
+              "Cloud Security Architecture",
+              "IAM (Identity & Access Management)",
+              "Vulnerability Assessment",
+              "Threat Hunting",
+            ].includes(s.name)
+          )
+          .map((s) => s._id),
+      },
+      {
+        name: "Digital Forensics Analyst",
+        description: "Investigate security incidents, collect evidence, analyze digital artifacts",
+        seniority: "mid",
+        requiredLabCount: 10,
+        estimatedHoursToComplete: 110,
+        tags: ["forensics", "investigation", "incident-response"],
+        requiredSkills: createdSkills
+          .filter((s) =>
+            [
+              "Malware Analysis",
+              "Log Analysis",
+              "Network Traffic Analysis",
+              "Incident Response",
+            ].includes(s.name)
+          )
+          .map((s) => s._id),
+      },
+      {
+        name: "Application Security Engineer",
+        description: "Secure software development, code review, vulnerability management",
+        seniority: "mid",
+        requiredLabCount: 11,
+        estimatedHoursToComplete: 100,
+        tags: ["development", "secure-coding", "devsecops"],
+        requiredSkills: createdSkills
+          .filter((s) =>
+            [
+              "Vulnerability Assessment",
+              "Exploit Development",
+              "Threat Hunting",
+            ].includes(s.name)
+          )
+          .map((s) => s._id),
+      },
+      {
+        name: "Threat Intelligence Analyst",
+        description: "Analyze threat actors, monitor emerging threats, provide strategic insights",
+        seniority: "mid",
+        requiredLabCount: 9,
+        estimatedHoursToComplete: 95,
+        tags: ["intelligence", "analysis", "strategy"],
+        requiredSkills: createdSkills
+          .filter((s) =>
+            [
+              "Threat Hunting",
+              "Malware Analysis",
+              "Network Traffic Analysis",
+              "Log Analysis",
+            ].includes(s.name)
+          )
+          .map((s) => s._id),
+      }, 
     ];
 
     console.log(`🎯 Creating ${rolesData.length} security roles...`);
@@ -240,7 +335,7 @@ const seedData = async () => {
       "Social Engineering": ["Incident Response"],
     };
 
-    for (const [moduleName, skillNames] of Object.entries(moduleSkillMapping)) {
+        for (const [moduleName, skillNames] of Object.entries(moduleSkillMapping)) {
       const module = modules.find((m) => m.title === moduleName);
       if (!module) continue;
 
@@ -248,10 +343,21 @@ const seedData = async () => {
         const skill = createdSkills.find((s) => s.name === skillName);
         if (!skill) continue;
 
+        // Check if module is already linked
         if (!skill.requiredModules.includes(module._id)) {
-          skill.requiredModules.push(module._id);
-          await skill.save();
-          console.log(`✅ Linked "${moduleName}" to "${skillName}"`);
+          try {
+            skill.requiredModules.push(module._id);
+            await skill.save();
+            console.log(`✅ Linked "${moduleName}" to "${skillName}"`);
+          } catch (saveError) {
+            if (saveError.code === 11000) {
+              console.log(`ℹ️  "${moduleName}" already linked to "${skillName}"`);
+            } else {
+              console.warn(`⚠️  Could not link "${moduleName}" to "${skillName}":`, saveError.message);
+            }
+          }
+        } else {
+          console.log(`ℹ️  "${moduleName}" already linked to "${skillName}"`);
         }
       }
     }

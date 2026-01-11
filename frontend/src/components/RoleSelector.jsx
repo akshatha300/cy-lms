@@ -25,16 +25,19 @@ const RoleSelector = () => {
   }, []);
 
   const handleSelectRole = async (roleId) => {
-    setSelecting(roleId);
-    try {
-      await selectRole(roleId);
-      navigate(`/app/role-dashboard/${roleId}`);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to select role");
-    } finally {
-      setSelecting(null);
-    }
-  };
+  setSelecting(roleId);
+  try {
+    const response = await selectRole(roleId);
+    console.log("Role selected:", response);
+    // Optional: navigate to a dashboard if you have one
+     navigate(`/app/role-dashboard/${roleId}`);
+  } catch (err) {
+    console.error("Failed to select role:", err);
+    setError(err.response?.data?.message || "Failed to select role");
+  } finally {
+    setSelecting(null);
+  }
+};
 
   if (loading) return <p>Loading roles...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;

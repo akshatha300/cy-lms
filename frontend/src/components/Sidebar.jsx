@@ -24,9 +24,6 @@ const Sidebar = () => {
         <NavLink to="/app" end style={linkStyle}>
           Dashboard
         </NavLink>
-        <NavLink to="/app/roles" style={linkStyle}>
-          Career Roles
-        </NavLink>
         <NavLink to="/app/modules" style={linkStyle}>
           Modules
         </NavLink>

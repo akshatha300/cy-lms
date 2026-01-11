@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import PhishingLab from "./PhishingLab.jsx";
 import { useParams, useNavigate } from "react-router-dom";
 import { getLabs, startLabAttempt, getMyLabAttempts, completeLabAttempt } from "../../api/roleBasedApi";
 import { useAuthContext } from "../../context/AuthContext";
@@ -57,7 +58,6 @@ const LabsPage = () => {
       setSelectedLab(null);
       loadData();
 
-      // Navigate back to role dashboard to see updated readiness
       if (roleId) {
         navigate(`/app/role-dashboard/${roleId}`);
       }
@@ -78,9 +78,9 @@ const LabsPage = () => {
   };
 
   const getDifficultyColor = (difficulty) => {
-    if (difficulty <= 2) return "bg-green-100 text-green-800";
-    if (difficulty === 3) return "bg-yellow-100 text-yellow-800";
-    return "bg-red-100 text-red-800";
+    if (difficulty <= 2) return "#10b981";
+    if (difficulty === 3) return "#f59e0b";
+    return "#ef4444";
   };
 
   const getScenarioIcon = (scenario) => {
@@ -91,64 +91,115 @@ const LabsPage = () => {
 
   if (loading) {
     return (
-      <div className="p-6 text-center">
-        <p className="text-gray-600">Loading labs...</p>
+      <div style={{ padding: "20px" }}>
+        <p>Loading labs...</p>
       </div>
     );
   }
+    if (activeAttempt && selectedLab) {
+    // For the phishing lab, show the interactive component
+    if (selectedLab.name === "Identify Phishing Indicators") {
+      return <PhishingLab onComplete={handleCompleteLab} onCancel={() => {
+        setActiveAttempt(null);
+        setSelectedLab(null);
+      }} />;
+    }
 
-  if (activeAttempt && selectedLab) {
+    // For other labs, keep the existing display
     return (
-      <div className="p-6 max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">{selectedLab.name}</h2>
-            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getDifficultyColor(selectedLab.difficulty)}`}>
+      <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
+        <div
+          style={{
+            border: "2px solid #e5e7eb",
+            borderRadius: "12px",
+            padding: "24px",
+            backgroundColor: "#f9fafb",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+            <h2 style={{ margin: 0, fontSize: "1.5rem", fontWeight: "bold" }}>{selectedLab.name}</h2>
+            <span
+              style={{
+                padding: "4px 12px",
+                borderRadius: "20px",
+                fontSize: "0.85rem",
+                fontWeight: "600",
+                backgroundColor: `${getDifficultyColor(selectedLab.difficulty)}20`,
+                color: getDifficultyColor(selectedLab.difficulty),
+              }}
+            >
               Level {selectedLab.difficulty}
             </span>
           </div>
 
-          <div className="mb-6">
-            <div className="flex items-center gap-4 mb-4 text-sm text-gray-600">
+          <div style={{ marginBottom: "20px" }}>
+            <div style={{ display: "flex", gap: "16px", marginBottom: "16px", fontSize: "0.9rem", color: "#6b7280" }}>
               <span>{getScenarioIcon(selectedLab.scenario)} {selectedLab.scenario}</span>
-              <span>⏱️ Time Limit: {selectedLab.timeLimit} min</span>
-              <span>🔧 Tools: {selectedLab.requiredTools?.join(", ")}</span>
+              <span>⏱️ {selectedLab.timeLimit} min</span>
+              <span>🔧 {selectedLab.requiredTools?.join(", ")}</span>
             </div>
 
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-              <h3 className="font-semibold text-blue-900 mb-2">Objective:</h3>
-              <p className="text-blue-800">{selectedLab.objectiveText}</p>
+            <div style={{ backgroundColor: "#dbeafe", borderLeft: "4px solid #3b82f6", padding: "16px", marginBottom: "16px" }}>
+              <h3 style={{ margin: "0 0 8px", color: "#1e40af", fontWeight: "600" }}>Objective:</h3>
+              <p style={{ margin: 0, color: "#1e40af" }}>{selectedLab.objectiveText}</p>
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg mb-6">
-              <h3 className="font-semibold text-gray-900 mb-2">Description:</h3>
-              <p className="text-gray-700">{selectedLab.description}</p>
+            <div style={{ backgroundColor: "#f3f4f6", padding: "16px", borderRadius: "8px", marginBottom: "16px" }}>
+              <h3 style={{ margin: "0 0 8px", fontWeight: "600" }}>Description:</h3>
+              <p style={{ margin: 0, color: "#374151" }}>{selectedLab.description}</p>
             </div>
 
-            <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4">
-              <p className="text-yellow-800 text-sm">
+            <div style={{ backgroundColor: "#fef3c7", borderLeft: "4px solid #f59e0b", padding: "16px" }}>
+              <p style={{ margin: 0, color: "#92400e", fontSize: "0.9rem" }}>
                 📋 In a real environment, you would access a VM, Docker container, or simulation here.
                 For this demo, complete the lab in your own environment and record your result below.
               </p>
             </div>
           </div>
 
-          <div className="flex gap-3">
+          <div style={{ display: "flex", gap: "12px" }}>
             <button
               onClick={() => handleCompleteLab("success", 100)}
-              className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-semibold"
+              style={{
+                flex: 1,
+                padding: "12px 16px",
+                backgroundColor: "#10b981",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontWeight: "600",
+              }}
             >
               ✅ Mark as Passed (100%)
             </button>
             <button
               onClick={() => handleCompleteLab("partial", 50)}
-              className="flex-1 bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 transition font-semibold"
+              style={{
+                flex: 1,
+                padding: "12px 16px",
+                backgroundColor: "#f59e0b",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontWeight: "600",
+              }}
             >
               ⚠️ Partial Completion (50%)
             </button>
             <button
               onClick={() => handleCompleteLab("failed", 0)}
-              className="flex-1 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition font-semibold"
+              style={{
+                flex: 1,
+                padding: "12px 16px",
+                backgroundColor: "#ef4444",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontWeight: "600",
+              }}
             >
               ❌ Mark as Failed
             </button>
@@ -159,7 +210,16 @@ const LabsPage = () => {
               setActiveAttempt(null);
               setSelectedLab(null);
             }}
-            className="mt-4 w-full text-gray-600 hover:text-gray-900 transition"
+            style={{
+              marginTop: "16px",
+              width: "100%",
+              padding: "12px",
+              backgroundColor: "transparent",
+              color: "#6b7280",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "0.9rem",
+            }}
           >
             Cancel
           </button>
@@ -168,21 +228,35 @@ const LabsPage = () => {
     );
   }
 
+
+
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">🔬 Practical Labs</h1>
-        <p className="text-gray-600">
-          Complete hands-on labs to build practical skills and improve your job readiness score.
-        </p>
-      </div>
+    <div style={{ padding: "20px" }}>
+      <h2>🔬 Practical Labs</h2>
+      <p style={{ color: "#666", marginBottom: "20px" }}>
+        Complete hands-on labs to build practical skills and improve your job readiness score.
+      </p>
 
       {labs.length === 0 ? (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-          <p className="text-yellow-800">No labs available yet. Contact your administrator.</p>
+        <div
+          style={{
+            border: "2px solid #fbbf24",
+            borderRadius: "12px",
+            padding: "24px",
+            textAlign: "center",
+            backgroundColor: "#fef3c7",
+          }}
+        >
+          <p style={{ margin: 0, color: "#92400e" }}>No labs available yet. Contact your administrator.</p>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          style={{
+            display: "grid",
+            gap: "16px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+          }}
+        >
           {labs.map((lab) => {
             const attemptCount = getAttemptCount(lab._id);
             const lastStatus = getLastAttemptStatus(lab._id);
@@ -190,35 +264,76 @@ const LabsPage = () => {
             return (
               <div
                 key={lab._id}
-                className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition"
+                style={{
+                  border: "2px solid #e5e7eb",
+                  borderRadius: "12px",
+                  padding: "20px",
+                  transition: "all 0.2s",
+                  backgroundColor: "#f9fafb",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#3b82f6")}
+                onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#e5e7eb")}
               >
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="font-bold text-gray-900 text-lg">{lab.name}</h3>
-                  <span className={`px-2 py-1 rounded text-xs font-semibold ${getDifficultyColor(lab.difficulty)}`}>
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "12px" }}>
+                  <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "bold" }}>{lab.name}</h3>
+                  <span
+                    style={{
+                      padding: "4px 8px",
+                      borderRadius: "12px",
+                      fontSize: "0.75rem",
+                      fontWeight: "600",
+                      backgroundColor: `${getDifficultyColor(lab.difficulty)}20`,
+                      color: getDifficultyColor(lab.difficulty),
+                    }}
+                  >
                     L{lab.difficulty}
                   </span>
                 </div>
 
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">{lab.description}</p>
+                <p style={{ margin: "0 0 16px", color: "#6b7280", fontSize: "0.9rem", lineHeight: "1.4" }}>
+                  {lab.description}
+                </p>
 
-                <div className="flex items-center gap-2 text-xs text-gray-500 mb-4">
-                  <span>{getScenarioIcon(lab.scenario)}</span>
-                  <span>⏱️ {lab.timeLimit}min</span>
-                  <span>🏷️ {lab.tags?.[0]}</span>
+                <div style={{ fontSize: "0.85rem", color: "#4b5563", marginBottom: "16px" }}>
+                  <div style={{ marginBottom: "4px" }}>
+                    <strong>Scenario:</strong> {getScenarioIcon(lab.scenario)} {lab.scenario}
+                  </div>
+                  <div style={{ marginBottom: "4px" }}>
+                    <strong>Time Limit:</strong> ⏱️ {lab.timeLimit} min
+                  </div>
+                  <div style={{ marginBottom: "4px" }}>
+                    <strong>Tools:</strong> 🔧 {lab.requiredTools?.join(", ") || "None"}
+                  </div>
+                  <div>
+                    <strong>Tags:</strong> 🏷️ {lab.tags?.[0] || "General"}
+                  </div>
                 </div>
 
                 {attemptCount > 0 && (
-                  <div className="mb-3 text-xs">
-                    <span className="text-gray-600">Attempts: {attemptCount}</span>
+                  <div style={{ marginBottom: "12px", fontSize: "0.8rem" }}>
+                    <span style={{ color: "#6b7280" }}>Attempts: {attemptCount}</span>
                     {lastStatus && (
                       <span
-                        className={`ml-2 px-2 py-0.5 rounded ${
-                          lastStatus === "success"
-                            ? "bg-green-100 text-green-800"
-                            : lastStatus === "partial"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
+                        style={{
+                          marginLeft: "8px",
+                          padding: "2px 8px",
+                          borderRadius: "12px",
+                          fontSize: "0.75rem",
+                          fontWeight: "600",
+                          backgroundColor:
+                            lastStatus === "success"
+                              ? "#10b98120"
+                              : lastStatus === "partial"
+                              ? "#f59e0b20"
+                              : "#ef444420",
+                          color:
+                            lastStatus === "success"
+                              ? "#10b981"
+                              : lastStatus === "partial"
+                              ? "#f59e0b"
+                              : "#ef4444",
+                        }}
                       >
                         Last: {lastStatus}
                       </span>
@@ -228,7 +343,20 @@ const LabsPage = () => {
 
                 <button
                   onClick={() => handleStartLab(lab)}
-                  className="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition font-semibold text-sm"
+                  style={{
+                    width: "100%",
+                    padding: "12px 16px",
+                    backgroundColor: "#3b82f6",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    fontSize: "0.95rem",
+                    transition: "background-color 0.2s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#2563eb")}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#3b82f6")}
                 >
                   {attemptCount > 0 ? "Try Again" : "Start Lab"}
                 </button>

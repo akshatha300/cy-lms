@@ -1,212 +1,161 @@
 import { useState, useEffect } from "react";
-import { getJobReadiness, getRoleProgress, getRoleById } from "../../api/roleBasedApi";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { Shield, Target, Cloud, Bug, AlertTriangle } from "lucide-react";
+import { getRoleById, getJobReadiness } from "../../api/roleBasedApi";
+
+const roleIcons = {
+  "SOC Analyst": Shield,
+  "Penetration Tester": Target,
+  "Cloud Security": Cloud,
+  "Malware Analyst": Bug,
+  "Incident Response": AlertTriangle,
+};
 
 const RoleDashboard = () => {
   const { roleId } = useParams();
+  const navigate = useNavigate();
   const [role, setRole] = useState(null);
-  const [readiness, setReadiness] = useState(null);
-  const [progress, setProgress] = useState(null);
+  const [readiness, setReadiness] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadRoleData = async () => {
       try {
-        const [roleData, readinessData, progressData] = await Promise.all([
-          getRoleById(roleId),
-          getJobReadiness(roleId),
-          getRoleProgress(roleId),
-        ]);
-
+        const roleData = await getRoleById(roleId);
         setRole(roleData);
-        setReadiness(readinessData);
-        setProgress(progressData);
+        
+        const readinessData = await getJobReadiness(roleId);
+        setReadiness(readinessData.score || 0);
       } catch (err) {
-        setError(err.response?.data?.message || "Failed to load dashboard data");
+        console.error("Failed to load role data:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    loadData();
+    if (roleId) {
+      loadRoleData();
+    }
   }, [roleId]);
 
-  if (loading) return <p>Loading role dashboard...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (loading) return <div style={{ padding: "20px" }}>Loading...</div>;
+  if (!role) return <div style={{ padding: "20px" }}>Role not found</div>;
 
-  const getReadinessColor = (score) => {
-    if (score < 40) return "#ef4444"; // red
-    if (score < 75) return "#f59e0b"; // amber
-    return "#10b981"; // green
-  };
+  const Icon = roleIcons[role.name.split(" ")[0]] || Shield;
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>{role?.name}</h2>
-      <p style={{ color: "#6b7280", marginBottom: "20px" }}>{role?.description}</p>
-
-      {/* Quick Action: Go to Labs */}
-      <Link
-        to={`/app/labs/${roleId}`}
-        style={{
-          display: "block",
-          backgroundColor: "#8b5cf6",
-          color: "white",
-          padding: "12px 16px",
-          borderRadius: "8px",
-          textDecoration: "none",
-          fontWeight: "600",
-          textAlign: "center",
-          marginBottom: "24px",
-        }}
-      >
-        🔬 Go to Practical Labs
-      </Link>
-
-      {/* Job Readiness Score */}
-      <div
-        style={{
-          backgroundColor: "#f0f9ff",
-          border: "1px solid #bfdbfe",
-          borderRadius: "12px",
-          padding: "24px",
-          marginBottom: "24px",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "8px" }}>
-          Overall Job Readiness
+    <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
+        <div style={{ 
+          width: "64px", 
+          height: "64px", 
+          borderRadius: "12px", 
+          background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <Icon size={32} color="white" />
         </div>
-        <div
+        <div>
+          <h1 style={{ margin: 0, fontSize: "2rem", fontWeight: "bold" }}>{role.name}</h1>
+          <p style={{ margin: "4px 0 0", color: "#6b7280" }}>{role.description}</p>
+        </div>
+      </div>
+
+      {/* Job Readiness */}
+      <div style={{ 
+        background: "#f0f9ff", 
+        border: "1px solid #bfdbfe", 
+        borderRadius: "12px", 
+        padding: "24px", 
+        marginBottom: "24px",
+        textAlign: "center"
+      }}>
+        <h2 style={{ margin: "0 0 8px", color: "#1e40af" }}>Job Readiness Score</h2>
+        <div style={{ fontSize: "3rem", fontWeight: "bold", color: "#1e40af" }}>{readiness}%</div>
+        <p style={{ margin: "8px 0 0", color: "#6b7280" }}>
+          {readiness >= 80 ? "Excellent! You're ready for this role." :
+           readiness >= 60 ? "Good progress. Keep learning!" :
+           "Keep working on your skills."}
+        </p>
+      </div>
+
+      {/* Quick Actions */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "16px" }}>
+        <button
+          onClick={() => navigate("/app/labs")}
           style={{
-            fontSize: "48px",
-            fontWeight: "700",
-            color: getReadinessColor(readiness?.overallReadinessScore || 0),
-            marginBottom: "8px",
+            padding: "16px",
+            borderRadius: "12px",
+            border: "2px solid #e5e7eb",
+            background: "white",
+            cursor: "pointer",
+            textAlign: "left"
           }}
         >
-          {readiness?.overallReadinessScore || 0}%
-        </div>
-        <div style={{ fontSize: "0.95rem", color: "#374151" }}>
-          {readiness?.readinessLevel || "Not Started"}
-        </div>
-        {readiness?.estimatedWeeksToReady > 0 && (
-          <div style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "8px" }}>
-            Est. {readiness.estimatedWeeksToReady} weeks to completion
-          </div>
-        )}
+          <h3 style={{ margin: "0 0 8px", color: "#3b82f6" }}>🔬 Practical Labs</h3>
+          <p style={{ margin: 0, color: "#6b7280", fontSize: "0.9rem" }}>
+            Hands-on exercises for your role
+          </p>
+        </button>
+
+        <button
+          onClick={() => navigate("/app/modules")}
+          style={{
+            padding: "16px",
+            borderRadius: "12px",
+            border: "2px solid #e5e7eb",
+            background: "white",
+            cursor: "pointer",
+            textAlign: "left"
+          }}
+        >
+          <h3 style={{ margin: "0 0 8px", color: "#3b82f6" }}>📚 Learning Modules</h3>
+          <p style={{ margin: 0, color: "#6b7280", fontSize: "0.9rem" }}>
+            Study materials and resources
+          </p>
+        </button>
+
+        <button
+          onClick={() => navigate("/app/chat")}
+          style={{
+            padding: "16px",
+            borderRadius: "12px",
+            border: "2px solid #e5e7eb",
+            background: "white",
+            cursor: "pointer",
+            textAlign: "left"
+          }}
+        >
+          <h3 style={{ margin: "0 0 8px", color: "#3b82f6" }}>💬 AI Tutor</h3>
+          <p style={{ margin: 0, color: "#6b7280", fontSize: "0.9rem" }}>
+            Get help from your AI assistant
+          </p>
+        </button>
       </div>
 
-      {/* Component Breakdown */}
-      <div
-        style={{
-          display: "grid",
-          gap: "12px",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          marginBottom: "24px",
-        }}
-      >
-        {[
-          {
-            label: "Skills Completion",
-            value: readiness?.skillsCompletionPercent || 0,
-          },
-          { label: "Lab Success Rate", value: readiness?.labSuccessRate || 0 },
-          { label: "Assessment Score", value: readiness?.assessmentScore || 0 },
-        ].map(({ label, value }) => (
-          <div
-            key={label}
-            style={{
-              border: "1px solid #e5e7eb",
-              borderRadius: "8px",
-              padding: "12px",
-              backgroundColor: "#f9fafb",
-            }}
-          >
-            <div style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "4px" }}>
-              {label}
-            </div>
-            <div style={{ fontSize: "28px", fontWeight: "600", color: "#1f2937" }}>
-              {value}%
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Skills Progress */}
-      <div>
-        <h3 style={{ marginBottom: "12px" }}>Skills Progress</h3>
-        {progress?.skills && progress.skills.length > 0 ? (
-          <div style={{ display: "grid", gap: "12px" }}>
-            {progress.skills.map((skill) => (
-              <div
-                key={skill.skillId}
+      {/* Skills Overview */}
+      {role.requiredSkills && role.requiredSkills.length > 0 && (
+        <div style={{ marginTop: "32px" }}>
+          <h2 style={{ marginBottom: "16px" }}>Required Skills</h2>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            {role.requiredSkills.map((skill, index) => (
+              <span
+                key={index}
                 style={{
-                  border: "1px solid #e5e7eb",
-                  borderRadius: "8px",
-                  padding: "12px",
-                  backgroundColor: "#f9fafb",
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                  <strong>{skill.skillId?.name || "Skill"}</strong>
-                  <span style={{ color: "#6b7280" }}>
-                    {skill.completionPercentage}%
-                  </span>
-                </div>
-                <div
-                  style={{
-                    width: "100%",
-                    height: "8px",
-                    backgroundColor: "#e5e7eb",
-                    borderRadius: "4px",
-                    overflow: "hidden",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: `${skill.completionPercentage}%`,
-                      height: "100%",
-                      backgroundColor: "#3b82f6",
-                      transition: "width 0.3s",
-                    }}
-                  />
-                </div>
-                <div style={{ fontSize: "0.8rem", color: "#6b7280", marginTop: "4px" }}>
-                  Status: {skill.status}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p>No skills tracked yet.</p>
-        )}
-      </div>
-
-      {/* Missing Skills */}
-      {readiness?.missingSkills && readiness.missingSkills.length > 0 && (
-        <div style={{ marginTop: "24px" }}>
-          <h3 style={{ marginBottom: "12px", color: "#dc2626" }}>
-            Missing Skills ({readiness.missingSkills.length})
-          </h3>
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {readiness.missingSkills.map((skill) => (
-              <li
-                key={skill._id}
-                style={{
+                  background: "#f3f4f6",
                   padding: "8px 12px",
-                  borderLeft: "4px solid #dc2626",
-                  backgroundColor: "#fef2f2",
-                  marginBottom: "8px",
-                  borderRadius: "4px",
-                  fontSize: "0.95rem",
+                  borderRadius: "20px",
+                  fontSize: "0.9rem",
+                  color: "#374151"
                 }}
               >
-                {skill.name}
-              </li>
+                {skill.name || skill}
+              </span>
             ))}
-          </ul>
+          </div>
         </div>
       )}
     </div>

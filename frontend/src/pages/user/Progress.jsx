@@ -10,16 +10,26 @@ const Progress = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600"></div>
+      <div style={{ padding: "20px" }}>
+        <p>Loading progress...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center">
-        <p className="text-gray-600">Failed to load progress data</p>
+      <div style={{ padding: "20px" }}>
+        <div
+          style={{
+            border: "2px solid #ef4444",
+            borderRadius: "12px",
+            padding: "24px",
+            textAlign: "center",
+            backgroundColor: "#fef2f2",
+          }}
+        >
+          <p style={{ margin: 0, color: "#991b1b" }}>Failed to load progress data</p>
+        </div>
       </div>
     );
   }
@@ -37,167 +47,306 @@ const Progress = () => {
       icon: Target,
       label: "Accuracy",
       value: `${accuracy || 0}%`,
-      bgColor: "#f9fafb",
-      iconBg: "#6b7280",
-      textColor: "#374151",
+      description: "Overall success rate",
     },
     {
       icon: Trophy,
       label: "Correct Answers",
       value: totalCorrect || 0,
-      bgColor: "#f9fafb",
-      iconBg: "#6b7280",
-      textColor: "#374151",
+      description: "Total correct responses",
     },
     {
       icon: Activity,
       label: "Total Attempts",
       value: attemptsCount || 0,
-      bgColor: "#f9fafb",
-      iconBg: "#6b7280",
-      textColor: "#374151",
+      description: "Questions attempted",
     },
     {
       icon: Zap,
       label: "Current Streak",
       value: streak || 0,
-      bgColor: "#f9fafb",
-      iconBg: "#6b7280",
-      textColor: "#374151",
+      description: "Days in a row",
     },
     {
       icon: Brain,
       label: "Difficulty Level",
-      value: currentDifficulty || 1,
-      bgColor: "#f9fafb",
-      iconBg: "#6b7280",
-      textColor: "#374151",
+      value: `Level ${currentDifficulty || 1}`,
+      description: "Current difficulty",
+    },
+  ];
+
+  const achievements = [
+    {
+      icon: Trophy,
+      title: "High Scorer",
+      description: "80%+ accuracy",
+      achieved: accuracy >= 80,
+    },
+    {
+      icon: Zap,
+      title: "Week Warrior",
+      description: "7-day streak",
+      achieved: streak >= 7,
+    },
+    {
+      icon: Activity,
+      title: "Dedicated",
+      description: "50+ attempts",
+      achieved: attemptsCount >= 50,
+    },
+    {
+      icon: Brain,
+      title: "Advanced",
+      description: "Level 3+",
+      achieved: currentDifficulty >= 3,
     },
   ];
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div style={{ background: "linear-gradient(to right, #374151, #6b7280)" }} className="rounded-2xl p-8 text-white shadow-lg">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Progress Analytics</h1>
-            <p className="text-gray-200">Track your learning journey and achievements</p>
-          </div>
-          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
-            <BarChart3 className="w-8 h-8 text-white" />
-          </div>
-        </div>
-      </div>
+    <div style={{ padding: "20px" }}>
+      <h2>📊 Progress Analytics</h2>
+      <p style={{ color: "#666", marginBottom: "20px" }}>
+        Track your learning journey and achievements
+      </p>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {stats.map((stat, index) => (
-          <div key={index} style={{ backgroundColor: stat.bgColor }} className="rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div style={{ backgroundColor: stat.iconBg }} className="w-12 h-12 rounded-xl flex items-center justify-center mr-4 shadow-md">
-                  <stat.icon className="w-6 h-6 text-white" />
+      <div
+        style={{
+          display: "grid",
+          gap: "16px",
+          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          marginBottom: "24px",
+        }}
+      >
+        {stats.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <div
+              key={index}
+              style={{
+                border: "2px solid #e5e7eb",
+                borderRadius: "12px",
+                padding: "20px",
+                backgroundColor: "#f9fafb",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#3b82f6")}
+              onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#e5e7eb")}
+            >
+              <div style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}>
+                <div
+                  style={{
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "12px",
+                    background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: "16px",
+                  }}
+                >
+                  <Icon size={24} color="white" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 font-medium">{stat.label}</p>
-                  <p className="text-2xl font-bold" style={{ color: stat.textColor }}>{stat.value}</p>
+                  <p style={{ margin: "0 0 4px", fontSize: "0.9rem", color: "#6b7280", fontWeight: "500" }}>
+                    {stat.label}
+                  </p>
+                  <p style={{ margin: 0, fontSize: "1.5rem", fontWeight: "bold", color: "#1f2937" }}>
+                    {stat.value}
+                  </p>
                 </div>
               </div>
+              <p style={{ margin: 0, fontSize: "0.85rem", color: "#6b7280" }}>
+                {stat.description}
+              </p>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Performance Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Performance Summary */}
-        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-            <Award className="w-5 h-5 mr-3 text-gray-600" />
-            Performance Summary
-          </h3>
-          <div className="space-y-4">
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <Trophy className="w-5 h-5 text-gray-600 mr-2" />
-                  <span className="text-sm font-medium text-gray-700">Success Rate</span>
-                </div>
-                <span className="text-lg font-bold text-gray-800">{accuracy || 0}%</span>
-              </div>
-            </div>
-            
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <Target className="w-5 h-5 text-gray-600 mr-2" />
-                  <span className="text-sm font-medium text-gray-700">Learning Pace</span>
-                </div>
-                <span className="text-lg font-bold text-gray-800">
-                  {attemptsCount > 0 ? Math.round(attemptsCount / 10) : 0} q/day
+      {/* Performance Summary */}
+      <div
+        style={{
+          border: "2px solid #e5e7eb",
+          borderRadius: "12px",
+          padding: "24px",
+          backgroundColor: "#f9fafb",
+          marginBottom: "24px",
+        }}
+      >
+        <h3 style={{ margin: "0 0 20px", fontSize: "1.2rem", fontWeight: "bold", color: "#1f2937" }}>
+          🏆 Performance Summary
+        </h3>
+        <div
+          style={{
+            display: "grid",
+            gap: "12px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#f3f4f6",
+              padding: "16px",
+              borderRadius: "8px",
+              border: "1px solid #e5e7eb",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Trophy size={20} color="#6b7280" style={{ marginRight: "8px" }} />
+                <span style={{ fontSize: "0.9rem", color: "#374151", fontWeight: "500" }}>
+                  Success Rate
                 </span>
               </div>
+              <span style={{ fontSize: "1.1rem", fontWeight: "bold", color: "#1f2937" }}>
+                {accuracy || 0}%
+              </span>
             </div>
+          </div>
 
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <Zap className="w-5 h-5 text-gray-600 mr-2" />
-                  <span className="text-sm font-medium text-gray-700">Current Streak</span>
-                </div>
-                <span className="text-lg font-bold text-gray-800">{streak || 0} days</span>
+          <div
+            style={{
+              backgroundColor: "#f3f4f6",
+              padding: "16px",
+              borderRadius: "8px",
+              border: "1px solid #e5e7eb",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Target size={20} color="#6b7280" style={{ marginRight: "8px" }} />
+                <span style={{ fontSize: "0.9rem", color: "#374151", fontWeight: "500" }}>
+                  Learning Pace
+                </span>
               </div>
+              <span style={{ fontSize: "1.1rem", fontWeight: "bold", color: "#1f2937" }}>
+                {attemptsCount > 0 ? Math.round(attemptsCount / 10) : 0} q/day
+              </span>
             </div>
+          </div>
 
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <Brain className="w-5 h-5 text-gray-600 mr-2" />
-                  <span className="text-sm font-medium text-gray-700">Difficulty Level</span>
-                </div>
-                <span className="text-lg font-bold text-gray-800">Level {currentDifficulty || 1}</span>
+          <div
+            style={{
+              backgroundColor: "#f3f4f6",
+              padding: "16px",
+              borderRadius: "8px",
+              border: "1px solid #e5e7eb",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Zap size={20} color="#6b7280" style={{ marginRight: "8px" }} />
+                <span style={{ fontSize: "0.9rem", color: "#374151", fontWeight: "500" }}>
+                  Current Streak
+                </span>
               </div>
+              <span style={{ fontSize: "1.1rem", fontWeight: "bold", color: "#1f2937" }}>
+                {streak || 0} days
+              </span>
+            </div>
+          </div>
+
+          <div
+            style={{
+              backgroundColor: "#f3f4f6",
+              padding: "16px",
+              borderRadius: "8px",
+              border: "1px solid #e5e7eb",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Brain size={20} color="#6b7280" style={{ marginRight: "8px" }} />
+                <span style={{ fontSize: "0.9rem", color: "#374151", fontWeight: "500" }}>
+                  Difficulty Level
+                </span>
+              </div>
+              <span style={{ fontSize: "1.1rem", fontWeight: "bold", color: "#1f2937" }}>
+                Level {currentDifficulty || 1}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Achievement Badges */}
-      <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-          <Award className="w-5 h-5 mr-3 text-gray-600" />
-          Achievement Badges
+      <div
+        style={{
+          border: "2px solid #e5e7eb",
+          borderRadius: "12px",
+          padding: "24px",
+          backgroundColor: "#f9fafb",
+        }}
+      >
+        <h3 style={{ margin: "0 0 20px", fontSize: "1.2rem", fontWeight: "bold", color: "#1f2937" }}>
+          🏅 Achievement Badges
         </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className={`text-center p-4 rounded-lg border-2 ${
-            accuracy >= 80 ? 'bg-gray-100 border-gray-400' : 'bg-gray-50 border-gray-200'
-          }`}>
-            <Trophy className={`w-8 h-8 mx-auto mb-2 ${accuracy >= 80 ? 'text-gray-700' : 'text-gray-400'}`} />
-            <p className="text-sm font-medium">High Scorer</p>
-            <p className="text-xs text-gray-600">80%+ accuracy</p>
-          </div>
-          <div className={`text-center p-4 rounded-lg border-2 ${
-            streak >= 7 ? 'bg-gray-100 border-gray-400' : 'bg-gray-50 border-gray-200'
-          }`}>
-            <Zap className={`w-8 h-8 mx-auto mb-2 ${streak >= 7 ? 'text-gray-700' : 'text-gray-400'}`} />
-            <p className="text-sm font-medium">Week Warrior</p>
-            <p className="text-xs text-gray-600">7-day streak</p>
-          </div>
-          <div className={`text-center p-4 rounded-lg border-2 ${
-            attemptsCount >= 50 ? 'bg-gray-100 border-gray-400' : 'bg-gray-50 border-gray-200'
-          }`}>
-            <Activity className={`w-8 h-8 mx-auto mb-2 ${attemptsCount >= 50 ? 'text-gray-700' : 'text-gray-400'}`} />
-            <p className="text-sm font-medium">Dedicated</p>
-            <p className="text-xs text-gray-600">50+ attempts</p>
-          </div>
-          <div className={`text-center p-4 rounded-lg border-2 ${
-            currentDifficulty >= 3 ? 'bg-gray-100 border-gray-400' : 'bg-gray-50 border-gray-200'
-          }`}>
-            <Brain className={`w-8 h-8 mx-auto mb-2 ${currentDifficulty >= 3 ? 'text-gray-700' : 'text-gray-400'}`} />
-            <p className="text-sm font-medium">Advanced</p>
-            <p className="text-xs text-gray-600">Level 3+</p>
-          </div>
+        <div
+          style={{
+            display: "grid",
+            gap: "16px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          }}
+        >
+          {achievements.map((achievement, index) => {
+            const Icon = achievement.icon;
+            return (
+              <div
+                key={index}
+                style={{
+                  textAlign: "center",
+                  padding: "20px",
+                  borderRadius: "12px",
+                  border: "2px solid",
+                  borderColor: achievement.achieved ? "#10b981" : "#e5e7eb",
+                  backgroundColor: achievement.achieved ? "#f0fdf4" : "#f9fafb",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  if (achievement.achieved) {
+                    e.currentTarget.style.borderColor = "#059669";
+                    e.currentTarget.style.backgroundColor = "#dcfce7";
+                  } else {
+                    e.currentTarget.style.borderColor = "#3b82f6";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = achievement.achieved ? "#10b981" : "#e5e7eb";
+                  e.currentTarget.style.backgroundColor = achievement.achieved ? "#f0fdf4" : "#f9fafb";
+                }}
+              >
+                <Icon
+                  size={32}
+                  color={achievement.achieved ? "#10b981" : "#9ca3af"}
+                  style={{ marginBottom: "8px" }}
+                />
+                <p style={{ margin: "0 0 4px", fontSize: "0.9rem", fontWeight: "600", color: "#1f2937" }}>
+                  {achievement.title}
+                </p>
+                <p style={{ margin: 0, fontSize: "0.8rem", color: "#6b7280" }}>
+                  {achievement.description}
+                </p>
+                {achievement.achieved && (
+                  <div
+                    style={{
+                      marginTop: "8px",
+                      padding: "4px 8px",
+                      backgroundColor: "#10b981",
+                      color: "white",
+                      borderRadius: "12px",
+                      fontSize: "0.75rem",
+                      fontWeight: "600",
+                      display: "inline-block",
+                    }}
+                  >
+                    ✅ Achieved
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
