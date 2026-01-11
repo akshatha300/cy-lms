@@ -1,0 +1,18 @@
+title = "cy-lms gitleaks config"
+
+[allowlist]
+description = "Allow placeholder env vars in examples/docs"
+paths = [
+  "README.md",
+  ".env.example",
+  "backend/.env.example",
+]
+
+# Allow lines like JWT_SECRET= (empty) in docs/examples
+regexes = [
+  "(?i)JWT_SECRET=\\s*$",
+  "(?i)GROQ_API_KEY=\\s*$",
+  "(?i)HUGGINGFACE_API_KEY=\\s*$",
+  "(?i)GEMINI_API_KEY=\\s*$",
+  "(?i)MONGO_URI=\\s*$",
+]

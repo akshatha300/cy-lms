@@ -6,7 +6,7 @@ import { useAuthContext } from "../../context/AuthContext";
 const LabsPage = () => {
   const { roleId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuthContext();
+  const { user: _user } = useAuthContext();
   const [labs, setLabs] = useState([]);
   const [myAttempts, setMyAttempts] = useState([]);
   const [loading, setLoading] = useState(true);

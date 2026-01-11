@@ -47,7 +47,7 @@ const useAnimatedCounter = (endValue, duration = 800) => {
 };
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
 
   // Fetch modules and progress data
   const { data: modules = [], isLoading: modulesLoading } = useQuery({
@@ -61,10 +61,10 @@ const Dashboard = () => {
   });
 
   // Calculate stats from real data
-  const stats = [
+  const _stats = [
     { icon: Trophy, label: "Completed", value: progress?.totalCorrect || 0, color: "bg-blue-500", bgColor: "bg-blue-50" },
   ];
-  const animatedCompleted = useAnimatedCounter(progress?.totalCorrect || 0);
+  const _animatedCompleted = useAnimatedCounter(progress?.totalCorrect || 0);
 
   // Calculate module progress
   const getModuleProgress = (moduleId) => {

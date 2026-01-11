@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { MessageSquare, X, Send, Loader2, Minimize2 } from "lucide-react";
 import { sendChatMessage, fetchChatHistory } from "../api/chatApi";
 import useAuth from "../hooks/useAuth";
@@ -27,13 +27,7 @@ const FloatingChatbot = () => {
   }, []);
 
   // Load chat history when opened for the first time
-  useEffect(() => {
-    if (isOpen && messages.length === 1) {
-      loadHistory();
-    }
-  }, [isOpen]);
-
-  const loadHistory = async () => {
+  const loadHistory = useCallback(async () => {
     try {
       const data = await fetchChatHistory();
       if (Array.isArray(data.messages) && data.messages.length > 0) {
@@ -46,7 +40,13 @@ const FloatingChatbot = () => {
     } catch (err) {
       console.error("Failed to load chat history:", err);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (isOpen && messages.length === 1) {
+      loadHistory();
+    }
+  }, [isOpen, messages.length, loadHistory]);
 
   // Auto-scroll to bottom
   useEffect(() => {

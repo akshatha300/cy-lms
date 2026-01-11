@@ -1,5 +1,6 @@
 import { chatWithTutor as chatWithTutorService } from "../services/chatService.js";
 import ChatMessage from "../models/ChatMessage.js";
+import logger from "../utils/logger.js";
 
 // Controller: chat with tutor
 // Exposes POST /api/chat
@@ -27,15 +28,16 @@ export const chatWithTutor = async (req, res) => {
           { user: userId, role: "assistant", text: reply },
         ]);
       } catch (err) {
-        console.error("Failed to persist chat messages:", err);
+        logger.error("Failed to persist chat messages", { err: err?.message });
       }
     }
 
-    // Debug: log what we're sending to frontend
-    console.log("=== CONTROLLER: Sending response ===");
-    console.log("Reply type:", typeof reply);
-    console.log("Reply length:", reply?.length);
-    console.log("Reply preview:", reply?.substring(0, 200));
+    if (process.env.NODE_ENV !== "production") {
+      logger.info("chat response", {
+        replyType: typeof reply,
+        replyLength: reply?.length,
+      });
+    }
 
     return res.status(200).json({
       reply,
@@ -43,7 +45,7 @@ export const chatWithTutor = async (req, res) => {
       sources,
     });
   } catch (error) {
-    console.error("chatWithTutor error:", error);
+    logger.error("chatWithTutor error", { err: error?.message });
     return res.status(500).json({
       error: "Something went wrong",
     });
@@ -72,7 +74,7 @@ export const getChatHistory = async (req, res) => {
 
     return res.json({ messages: history });
   } catch (error) {
-    console.error("getChatHistory error:", error);
+    logger.error("getChatHistory error", { err: error?.message });
     return res.status(500).json({ error: "Failed to load chat history" });
   }
 };

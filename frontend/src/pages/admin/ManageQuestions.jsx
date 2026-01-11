@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import { getModules } from "../../api/moduleApi";
 import {
@@ -32,25 +32,25 @@ const ManageQuestions = () => {
 
 	const isAdmin = useMemo(() => user?.role === "admin", [user]);
 
-	const loadModules = async () => {
+	const loadModules = useCallback(async () => {
 		try {
 			setLoading(true);
 			const data = await getModules();
 			setModules(data || []);
 			// Select first module by default
-			if (!selectedModuleId && data?.length) {
-				setSelectedModuleId(data[0]._id);
+			if (data?.length) {
+				setSelectedModuleId((prev) => prev || data[0]._id);
 			}
 		} catch (err) {
 			setError(err.response?.data?.message || "Failed to load modules");
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, []);
 
 	useEffect(() => {
 		loadModules();
-	}, []);
+	}, [loadModules]);
 
 	const loadQuestions = async (moduleId) => {
 		if (!moduleId) return;
