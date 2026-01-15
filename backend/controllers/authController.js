@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 import asyncHandler from "express-async-handler";
-import generateToken from "../utils/generateToken.js"
+import generateToken from "../utils/generateToken.js";
 import { upsertUser } from "../models/userService.js";
 
 
