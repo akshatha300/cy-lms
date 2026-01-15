@@ -53,10 +53,8 @@ Respond directly to the student. Do not mention that you are an AI model.`;
     console.log("=== DEBUG: Environment Variables ===");
 console.log("GROQ_API_KEY exists:", !!process.env.GROQ_API_KEY);
 console.log("GROQ_API_KEY length:", process.env.GROQ_API_KEY?.length);
-console.log("GROQ_API_KEY starts with gsk_:", process.env.GROQ_API_KEY?.startsWith("gsk_"));console.log("=== DEBUG: Environment Variables ===");
-console.log("GROQ_API_KEY exists:", !!process.env.GROQ_API_KEY);
-console.log("GROQ_API_KEY length:", process.env.GROQ_API_KEY?.length);
 console.log("GROQ_API_KEY starts with gsk_:", process.env.GROQ_API_KEY?.startsWith("gsk_"));
+    
     const model = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
 
     const response = await fetch(
