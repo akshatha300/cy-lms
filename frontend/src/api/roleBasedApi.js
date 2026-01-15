@@ -114,4 +114,24 @@ export const completeLabAttempt = async (attemptId, payload) => {
 export const getMyLabAttempts = async () => {
   const res = await client.get("/labs/attempts/me");
   return res.data.attempts;
+  
+};
+/**
+ * Role Modules API calls
+ */
+export const getRoleModules = async (roleId) => {
+  const res = await client.get(`/roles/${roleId}/modules`);
+  return res.data;
+};
+
+export const getRoleLearningPath = async (roleId) => {
+  const res = await client.get(`/roles/${roleId}/learning-path`);
+  return res.data;
+};
+/**
+ * Role Labs API calls
+ */
+export const getRoleLabs = async (roleId) => {
+  const res = await client.get(`/roles/${roleId}/labs`);
+  return res.data;
 };

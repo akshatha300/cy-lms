@@ -2,6 +2,28 @@ import mongoose from "mongoose";
 
 const securityRoleSchema = new mongoose.Schema(
   {
+    assignedModules: [{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Module",
+  required: true
+}],
+moduleCount: {
+  type: Number,
+  default: 5,
+  min: 1,
+  max: 20
+},
+ assignedLabs: [{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Lab",
+  required: true
+}],
+labCount: {
+  type: Number,
+  default: 0,
+  min: 0,
+  max: 10},
+
     name: {
       type: String,
       required: true,

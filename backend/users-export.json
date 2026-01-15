@@ -1,0 +1,38 @@
+[
+  {
+    "_id": "69634e6b2b85efe9161753ac",
+    "name": "cat",
+    "email": "cat@gmail.com",
+    "password": "$2a$10$vARDIuTiNm7/a5CDNRwr5.1ECuROauswDNhBrPv.Egwi5ST0IMbIq",
+    "role": "user",
+    "avatarUrl": "",
+    "bio": "",
+    "primaryRole": "696353666abb629ee48b0dc3",
+    "selectedRoles": [
+      "696353666abb629ee48b0dc3",
+      "696353666abb629ee48b0dc6",
+      "696353666abb629ee48b0dc5"
+    ],
+    "preferredCareerPath": null,
+    "createdAt": "2026-01-11T07:16:59.432Z",
+    "updatedAt": "2026-01-11T11:12:18.007Z",
+    "userId": 1,
+    "__v": 0
+  },
+  {
+    "_id": "69638729ed93fead28fe1264",
+    "name": "Admin",
+    "email": "admin@example.com",
+    "password": "$2a$10$rRrO0PzIxpxMcfCNNOkA..tFeCkVGPPipxx5z1n1XM2M5P5PfMfnK",
+    "role": "admin",
+    "avatarUrl": "",
+    "bio": "",
+    "primaryRole": null,
+    "selectedRoles": [],
+    "preferredCareerPath": null,
+    "createdAt": "2026-01-11T11:19:05.292Z",
+    "updatedAt": "2026-01-11T11:19:05.292Z",
+    "userId": 2,
+    "__v": 0
+  }
+]

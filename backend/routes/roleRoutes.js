@@ -7,6 +7,10 @@ import {
   selectUserRole,
   getUserRole,
   getRoleSkills,
+  getRoleModules,
+  updateRoleModules,
+  getRoleLearningPath,
+  getRoleLabs,
 } from "../controllers/roleController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -32,5 +36,8 @@ router.post("/", protect, createSecurityRole);
 
 // Admin: update role
 router.put("/:roleId", protect, updateSecurityRole);
-
+router.get("/:roleId/modules", getRoleModules);
+router.put("/:roleId/modules", updateRoleModules);
+router.get("/:roleId/learning-path", getRoleLearningPath);
+router.get("/:roleId/labs", getRoleLabs);
 export default router;

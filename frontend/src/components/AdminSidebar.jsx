@@ -31,15 +31,20 @@ const AdminSidebar = () => {
         <NavLink to="/admin/modules" style={linkStyle}>
           Modules
         </NavLink>
+        <NavLink to="/admin/labs" style={linkStyle}>
+          Labs
+        </NavLink>
         <NavLink to="/admin/questions" style={linkStyle}>
           Questions
         </NavLink>
         <NavLink to="/admin/logs" style={linkStyle}>
           Logs
+          
         </NavLink>
       </nav>
     </aside>
   );
 };
+
 
 export default AdminSidebar;

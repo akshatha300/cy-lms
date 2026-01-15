@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import PhishingLab from "./PhishingLab.jsx";
 import { useParams, useNavigate } from "react-router-dom";
-import { getLabs, startLabAttempt, getMyLabAttempts, completeLabAttempt } from "../../api/roleBasedApi";
+import { getLabs, startLabAttempt, getMyLabAttempts, completeLabAttempt, getRoleLabs, getUserRole } from "../../api/roleBasedApi";
 import { useAuthContext } from "../../context/AuthContext";
 
 const LabsPage = () => {
@@ -13,6 +13,7 @@ const LabsPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedLab, setSelectedLab] = useState(null);
   const [activeAttempt, setActiveAttempt] = useState(null);
+  const [roleInfo, setRoleInfo] = useState({ roleFiltered: false, roleName: null, roleId: null });
 
   useEffect(() => {
     loadData();
@@ -20,10 +21,31 @@ const LabsPage = () => {
 
   const loadData = async () => {
     try {
-      const [labsData, attemptsData] = await Promise.all([
-        getLabs(),
-        getMyLabAttempts(),
-      ]);
+      // First get user's selected role
+      const userRole = await getUserRole();
+      
+      let labsData;
+      if (userRole && userRole.primaryRole) {
+        // Get labs for the user's role
+        const roleLabsData = await getRoleLabs(userRole.primaryRole._id);
+        labsData = roleLabsData.labs || [];
+        setRoleInfo({
+          roleFiltered: true,
+          roleName: userRole.primaryRole.name,
+          roleId: userRole.primaryRole._id,
+          labCount: roleLabsData.labCount
+        });
+      } else {
+        // No role selected, show all labs
+        labsData = await getLabs();
+        setRoleInfo({
+          roleFiltered: false,
+          roleName: null,
+          roleId: null
+        });
+      }
+
+      const attemptsData = await getMyLabAttempts();
       setLabs(labsData);
       setMyAttempts(attemptsData);
     } catch (err) {
@@ -35,46 +57,27 @@ const LabsPage = () => {
 
   const handleStartLab = async (lab) => {
     try {
+      // Start lab attempt
       const attempt = await startLabAttempt(lab._id, roleId);
-      setActiveAttempt(attempt);
+      // Set both the selected lab and the active attempt
       setSelectedLab(lab);
+      setActiveAttempt(attempt);
     } catch (err) {
-      alert("Failed to start lab: " + (err.response?.data?.message || err.message));
+      console.error("Failed to start lab:", err);
     }
   };
 
-  const handleCompleteLab = async (status, score) => {
-    if (!activeAttempt) return;
-
+  const handleCompleteLab = async (payload) => {
     try {
-      await completeLabAttempt(activeAttempt._id, {
-        status,
-        score: score || (status === "success" ? 100 : status === "partial" ? 50 : 0),
-        timeTakenSeconds: Math.floor((Date.now() - new Date(activeAttempt.createdAt)) / 1000),
-      });
-
-      alert(`Lab ${status === "success" ? "passed" : status === "partial" ? "partially completed" : "failed"}!`);
+      const result = await completeLabAttempt(activeAttempt._id, payload);
       setActiveAttempt(null);
       setSelectedLab(null);
-      loadData();
-
-      if (roleId) {
-        navigate(`/app/role-dashboard/${roleId}`);
-      }
+      // Reload attempts
+      const attemptsData = await getMyLabAttempts();
+      setMyAttempts(attemptsData);
     } catch (err) {
-      alert("Failed to complete lab: " + (err.response?.data?.message || err.message));
+      console.error("Failed to complete lab:", err);
     }
-  };
-
-  const getAttemptCount = (labId) => {
-    return myAttempts.filter((a) => a.labId?._id === labId).length;
-  };
-
-  const getLastAttemptStatus = (labId) => {
-    const attempts = myAttempts
-      .filter((a) => a.labId?._id === labId)
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    return attempts[0]?.status;
   };
 
   const getDifficultyColor = (difficulty) => {
@@ -91,278 +94,210 @@ const LabsPage = () => {
 
   if (loading) {
     return (
-      <div style={{ padding: "20px" }}>
+      <div style={{ padding: "20px", textAlign: "center" }}>
+        <div style={{ fontSize: "18px", marginBottom: "10px" }}>🔬</div>
         <p>Loading labs...</p>
       </div>
     );
   }
-    if (activeAttempt && selectedLab) {
-    // For the phishing lab, show the interactive component
-    if (selectedLab.name === "Identify Phishing Indicators") {
-      return <PhishingLab onComplete={handleCompleteLab} onCancel={() => {
-        setActiveAttempt(null);
-        setSelectedLab(null);
-      }} />;
-    }
 
-    // For other labs, keep the existing display
+  if (selectedLab && activeAttempt) {
     return (
-      <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-        <div
-          style={{
-            border: "2px solid #e5e7eb",
-            borderRadius: "12px",
-            padding: "24px",
-            backgroundColor: "#f9fafb",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-            <h2 style={{ margin: 0, fontSize: "1.5rem", fontWeight: "bold" }}>{selectedLab.name}</h2>
-            <span
-              style={{
-                padding: "4px 12px",
-                borderRadius: "20px",
-                fontSize: "0.85rem",
-                fontWeight: "600",
-                backgroundColor: `${getDifficultyColor(selectedLab.difficulty)}20`,
-                color: getDifficultyColor(selectedLab.difficulty),
-              }}
-            >
-              Level {selectedLab.difficulty}
-            </span>
-          </div>
-
-          <div style={{ marginBottom: "20px" }}>
-            <div style={{ display: "flex", gap: "16px", marginBottom: "16px", fontSize: "0.9rem", color: "#6b7280" }}>
-              <span>{getScenarioIcon(selectedLab.scenario)} {selectedLab.scenario}</span>
-              <span>⏱️ {selectedLab.timeLimit} min</span>
-              <span>🔧 {selectedLab.requiredTools?.join(", ")}</span>
-            </div>
-
-            <div style={{ backgroundColor: "#dbeafe", borderLeft: "4px solid #3b82f6", padding: "16px", marginBottom: "16px" }}>
-              <h3 style={{ margin: "0 0 8px", color: "#1e40af", fontWeight: "600" }}>Objective:</h3>
-              <p style={{ margin: 0, color: "#1e40af" }}>{selectedLab.objectiveText}</p>
-            </div>
-
-            <div style={{ backgroundColor: "#f3f4f6", padding: "16px", borderRadius: "8px", marginBottom: "16px" }}>
-              <h3 style={{ margin: "0 0 8px", fontWeight: "600" }}>Description:</h3>
-              <p style={{ margin: 0, color: "#374151" }}>{selectedLab.description}</p>
-            </div>
-
-            <div style={{ backgroundColor: "#fef3c7", borderLeft: "4px solid #f59e0b", padding: "16px" }}>
-              <p style={{ margin: 0, color: "#92400e", fontSize: "0.9rem" }}>
-                📋 In a real environment, you would access a VM, Docker container, or simulation here.
-                For this demo, complete the lab in your own environment and record your result below.
-              </p>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", gap: "12px" }}>
-            <button
-              onClick={() => handleCompleteLab("success", 100)}
-              style={{
-                flex: 1,
-                padding: "12px 16px",
-                backgroundColor: "#10b981",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontWeight: "600",
-              }}
-            >
-              ✅ Mark as Passed (100%)
-            </button>
-            <button
-              onClick={() => handleCompleteLab("partial", 50)}
-              style={{
-                flex: 1,
-                padding: "12px 16px",
-                backgroundColor: "#f59e0b",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontWeight: "600",
-              }}
-            >
-              ⚠️ Partial Completion (50%)
-            </button>
-            <button
-              onClick={() => handleCompleteLab("failed", 0)}
-              style={{
-                flex: 1,
-                padding: "12px 16px",
-                backgroundColor: "#ef4444",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontWeight: "600",
-              }}
-            >
-              ❌ Mark as Failed
-            </button>
-          </div>
-
-          <button
-            onClick={() => {
-              setActiveAttempt(null);
-              setSelectedLab(null);
-            }}
-            style={{
-              marginTop: "16px",
-              width: "100%",
-              padding: "12px",
-              backgroundColor: "transparent",
-              color: "#6b7280",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "0.9rem",
-            }}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
+      <PhishingLab
+        lab={selectedLab}
+        attempt={activeAttempt}
+        onComplete={handleCompleteLab}
+        onCancel={() => {
+          setActiveAttempt(null);
+          setSelectedLab(null);
+        }}
+      />
     );
   }
 
-
-
   return (
     <div style={{ padding: "20px" }}>
-      <h2>🔬 Practical Labs</h2>
-      <p style={{ color: "#666", marginBottom: "20px" }}>
-        Complete hands-on labs to build practical skills and improve your job readiness score.
-      </p>
+      {/* Header */}
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "space-between", 
+        alignItems: "center", 
+        marginBottom: "24px",
+        paddingBottom: "16px",
+        borderBottom: "2px solid #f3f4f6"
+      }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: "24px", fontWeight: "bold", color: "#1f2937" }}>
+            {roleInfo.roleFiltered 
+              ? `${roleInfo.roleName} Labs` 
+              : "All Labs"
+            }
+          </h2>
+          {roleInfo.roleFiltered && (
+            <p style={{ 
+              margin: "4px 0 0", 
+              color: "#6b7280", 
+              fontSize: "14px" 
+            }}>
+              Your personalized lab exercises for {roleInfo.roleName}
+            </p>
+          )}
+        </div>
+        <div style={{
+          backgroundColor: "#dbeafe",
+          color: "#1e40af",
+          padding: "8px 16px",
+          borderRadius: "20px",
+          fontSize: "14px",
+          fontWeight: "600"
+        }}>
+          {roleInfo.labCount || labs.length} Labs
+        </div>
+      </div>
 
+      {/* Labs Grid */}
       {labs.length === 0 ? (
-        <div
-          style={{
-            border: "2px solid #fbbf24",
-            borderRadius: "12px",
-            padding: "24px",
-            textAlign: "center",
-            backgroundColor: "#fef3c7",
-          }}
-        >
-          <p style={{ margin: 0, color: "#92400e" }}>No labs available yet. Contact your administrator.</p>
+        <div style={{
+          textAlign: "center",
+          padding: "60px 20px",
+          backgroundColor: "#f8fafc",
+          border: "2px dashed #cbd5e1",
+          borderRadius: "12px",
+          margin: "20px 0"
+        }}>
+          <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔬</div>
+          <h3 style={{ margin: "0 0 16px", color: "#64748b" }}>
+            {roleInfo.roleFiltered 
+              ? `No labs assigned to ${roleInfo.roleName} yet` 
+              : "No labs available"
+            }
+          </h3>
+          <p style={{ color: "#6b7280", margin: 0 }}>
+            {roleInfo.roleFiltered 
+              ? "Select a role to see role-specific labs, or contact your administrator."
+              : "Check back later for new lab exercises."
+            }
+          </p>
         </div>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gap: "16px",
-            gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
-          }}
-        >
-          {labs.map((lab) => {
-            const attemptCount = getAttemptCount(lab._id);
-            const lastStatus = getLastAttemptStatus(lab._id);
-
-            return (
-              <div
-                key={lab._id}
-                style={{
-                  border: "2px solid #e5e7eb",
-                  borderRadius: "12px",
-                  padding: "20px",
-                  transition: "all 0.2s",
-                  backgroundColor: "#f9fafb",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#3b82f6")}
-                onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#e5e7eb")}
-              >
-                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "12px" }}>
-                  <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "bold" }}>{lab.name}</h3>
-                  <span
-                    style={{
-                      padding: "4px 8px",
-                      borderRadius: "12px",
-                      fontSize: "0.75rem",
-                      fontWeight: "600",
-                      backgroundColor: `${getDifficultyColor(lab.difficulty)}20`,
-                      color: getDifficultyColor(lab.difficulty),
-                    }}
-                  >
-                    L{lab.difficulty}
-                  </span>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
+          gap: "20px"
+        }}>
+          {labs.map((lab) => (
+            <div
+              key={lab._id}
+              style={{
+                border: "2px solid #e2e8f0",
+                borderRadius: "12px",
+                padding: "20px",
+                backgroundColor: "#ffffff",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                transition: "all 0.2s ease-in-out",
+                cursor: "pointer"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 8px 12px -2px rgba(0, 0, 0, 0.15)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
+              }}
+            >
+              {/* Lab Header */}
+              <div style={{ 
+                display: "flex", 
+                justifyContent: "space-between", 
+                alignItems: "flex-start", 
+                marginBottom: "12px" 
+              }}>
+                <div style={{ flex: 1 }}>
+                  <h3 style={{ 
+                    margin: "0 0 8px", 
+                    fontSize: "18px", 
+                    fontWeight: "bold", 
+                    color: "#1f2937",
+                    lineHeight: "1.3"
+                  }}>
+                    {lab.name}
+                  </h3>
+                  <p style={{ 
+                    margin: "0 0 12px", 
+                    color: "#6b7280", 
+                    fontSize: "14px",
+                    lineHeight: "1.4"
+                  }}>
+                    {lab.description}
+                  </p>
                 </div>
-
-                <p style={{ margin: "0 0 16px", color: "#6b7280", fontSize: "0.9rem", lineHeight: "1.4" }}>
-                  {lab.description}
-                </p>
-
-                <div style={{ fontSize: "0.85rem", color: "#4b5563", marginBottom: "16px" }}>
-                  <div style={{ marginBottom: "4px" }}>
-                    <strong>Scenario:</strong> {getScenarioIcon(lab.scenario)} {lab.scenario}
-                  </div>
-                  <div style={{ marginBottom: "4px" }}>
-                    <strong>Time Limit:</strong> ⏱️ {lab.timeLimit} min
-                  </div>
-                  <div style={{ marginBottom: "4px" }}>
-                    <strong>Tools:</strong> 🔧 {lab.requiredTools?.join(", ") || "None"}
-                  </div>
-                  <div>
-                    <strong>Tags:</strong> 🏷️ {lab.tags?.[0] || "General"}
-                  </div>
+                <div style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  backgroundColor: getDifficultyColor(lab.difficulty),
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "white",
+                  fontSize: "16px",
+                  fontWeight: "bold"
+                }}>
+                  {lab.difficulty}
                 </div>
-
-                {attemptCount > 0 && (
-                  <div style={{ marginBottom: "12px", fontSize: "0.8rem" }}>
-                    <span style={{ color: "#6b7280" }}>Attempts: {attemptCount}</span>
-                    {lastStatus && (
-                      <span
-                        style={{
-                          marginLeft: "8px",
-                          padding: "2px 8px",
-                          borderRadius: "12px",
-                          fontSize: "0.75rem",
-                          fontWeight: "600",
-                          backgroundColor:
-                            lastStatus === "success"
-                              ? "#10b98120"
-                              : lastStatus === "partial"
-                              ? "#f59e0b20"
-                              : "#ef444420",
-                          color:
-                            lastStatus === "success"
-                              ? "#10b981"
-                              : lastStatus === "partial"
-                              ? "#f59e0b"
-                              : "#ef4444",
-                        }}
-                      >
-                        Last: {lastStatus}
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                <button
-                  onClick={() => handleStartLab(lab)}
-                  style={{
-                    width: "100%",
-                    padding: "12px 16px",
-                    backgroundColor: "#3b82f6",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    fontWeight: "600",
-                    fontSize: "0.95rem",
-                    transition: "background-color 0.2s",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#2563eb")}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#3b82f6")}
-                >
-                  {attemptCount > 0 ? "Try Again" : "Start Lab"}
-                </button>
               </div>
-            );
-          })}
+
+              {/* Lab Details */}
+              <div style={{ 
+                display: "flex", 
+                gap: "16px", 
+                marginBottom: "16px",
+                fontSize: "13px",
+                color: "#4b5563"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span>{getScenarioIcon(lab.scenario)}</span>
+                  <span style={{ fontWeight: "600" }}>{lab.scenario}</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span>⏱️</span>
+                  <span>{lab.timeLimit} min</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span>🔧</span>
+                  <span>{lab.requiredTools?.[0] || "Basic Tools"}</span>
+                </div>
+              </div>
+
+              {/* Start Lab Button */}
+              <button
+                onClick={() => handleStartLab(lab)}
+                style={{
+                  width: "100%",
+                  padding: "12px 20px",
+                  backgroundColor: "#3b82f6",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease-in-out"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#2563eb";
+                  e.currentTarget.style.transform = "scale(1.02)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#3b82f6";
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
+              >
+                🚀 Start Lab
+              </button>
+            </div>
+          ))}
         </div>
       )}
     </div>

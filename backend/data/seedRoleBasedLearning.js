@@ -361,6 +361,123 @@ const seedData = async () => {
         }
       }
     }
+        // ===== ROLE -> MODULE MAPPING =====
+    console.log("🔗 Assigning modules to roles...");
+
+    // Define role-to-module mappings (5 modules per role)
+    const roleModuleMappings = {
+      "SOC Analyst L1": [
+        "Phishing Awareness",
+        "Malware Basics", 
+        "Social Engineering",
+        "SIEM Fundamentals",
+        "Incident Response Procedures"
+      ],
+      "Penetration Tester": [
+        "Password Security",
+        "Malware Basics",
+        "Network Security Fundamentals",
+        "Secure Coding Practices",
+        "DevSecOps Fundamentals"
+      ],
+      "Cloud Security Engineer": [
+        "Password Security",
+        "Network Security Fundamentals",
+        "Data Protection & Privacy",
+        "Security Auditing",
+        "DevSecOps Fundamentals"
+      ],
+      "Malware Analyst": [
+        "Malware Basics",
+        "Social Engineering",
+        "Network Security Fundamentals",
+        "Threat Intelligence Basics",
+        "Incident Response Procedures"
+      ],
+      "Incident Response Lead": [
+        "Phishing Awareness",
+        "Malware Basics",
+        "Social Engineering",
+        "Incident Response Procedures",
+        "Risk Management Fundamentals"
+      ],
+      "Security Auditor": [
+        "Data Protection & Privacy",
+        "Security Auditing",
+        "Risk Management Fundamentals",
+        "Network Security Fundamentals",
+        "Password Security"
+      ],
+      "Security Architect": [
+        "Network Security Fundamentals",
+        "Data Protection & Privacy",
+        "Security Auditing",
+        "Risk Management Fundamentals",
+        "DevSecOps Fundamentals"
+      ],
+      "Digital Forensics Analyst": [
+        "Malware Basics",
+        "Social Engineering",
+        "Incident Response Procedures",
+        "Data Protection & Privacy",
+        "Threat Intelligence Basics"
+      ],
+      "Application Security Engineer": [
+        "Password Security",
+        "Secure Coding Practices",
+        "DevSecOps Fundamentals",
+        "Network Security Fundamentals",
+        "Malware Basics"
+      ],
+      "Threat Intelligence Analyst": [
+        "Threat Intelligence Basics",
+        "Malware Basics",
+        "Social Engineering",
+        "Network Security Fundamentals",
+        "Data Protection & Privacy"
+      ]
+    };
+
+    // Process each role
+    for (const role of createdRoles) {
+      const roleName = role.name;
+      const moduleTitles = roleModuleMappings[roleName];
+
+      if (!moduleTitles) {
+        console.warn(`⚠️  No module mapping found for role: ${roleName}`);
+        continue;
+      }
+
+      // Find module IDs for this role
+      const moduleIds = [];
+      for (const moduleTitle of moduleTitles) {
+        const module = modules.find(m => m.title === moduleTitle);
+        if (module) {
+          moduleIds.push(module._id);
+        } else {
+          console.warn(`⚠️  Module not found: ${moduleTitle}`);
+        }
+      }
+
+      // Update role with assigned modules
+      if (moduleIds.length > 0) {
+        await SecurityRole.findByIdAndUpdate(role._id, {
+          assignedModules: moduleIds,
+          moduleCount: moduleIds.length
+        });
+
+        console.log(`✅ Assigned ${moduleIds.length} modules to "${roleName}":`);
+        moduleTitles.forEach(title => {
+          const module = modules.find(m => m.title === title);
+          if (module) {
+            console.log(`   - ${title}`);
+          }
+        });
+        console.log("");
+      }
+    }
+
+    console.log("✨ Role-to-module mapping complete!");
 
     console.log("\n✨ Seed complete!\n");
     console.log("Summary:");
