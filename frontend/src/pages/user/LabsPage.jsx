@@ -258,17 +258,46 @@ const LabsPage = () => {
 
     const labNameLower = lab.name?.toLowerCase()?.trim() || "";
 
-    const renderLab = (Component) => (
-      <Component
-        lab={lab}
-        attempt={activeAttempt}
-        onComplete={handleCompleteLab}
-        onCancel={() => {
-          setActiveAttempt(null);
-          setSelectedLab(null);
-        }}
-      />
-    );
+    const renderLab = (Component) => {
+      try {
+        return (
+          <Component
+            lab={lab}
+            attempt={activeAttempt}
+            onComplete={handleCompleteLab}
+            onCancel={() => {
+              setActiveAttempt(null);
+              setSelectedLab(null);
+            }}
+          />
+        );
+      } catch (error) {
+        console.error("Error rendering lab component:", error);
+        return (
+          <div style={{ padding: "20px", textAlign: "center", backgroundColor: "#fee2e2", border: "1px solid #ef4444", borderRadius: "8px" }}>
+            <h3 style={{ color: "#dc2626" }}>Error Loading Lab</h3>
+            <p style={{ color: "#7f1d1d" }}>There was an error loading this lab component.</p>
+            <p style={{ fontSize: "12px", color: "#991b1b" }}>Error: {error.message}</p>
+            <button
+              onClick={() => {
+                setActiveAttempt(null);
+                setSelectedLab(null);
+              }}
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#ef4444",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer"
+              }}
+            >
+              Back to Labs
+            </button>
+          </div>
+        );
+      }
+    };
 
     const mapping = labComponentMap[labNameLower];
     if (mapping?.component) {

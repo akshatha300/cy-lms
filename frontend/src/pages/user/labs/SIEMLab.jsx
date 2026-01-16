@@ -30,6 +30,10 @@ const SIEMLab = ({ lab, attempt, onComplete, onCancel }) => {
 
   const currentScenario = siemScenarios[currentStep] || siemScenarios[0];
 
+  // Calculate alert statistics for display
+  const criticalAlerts = currentScenario.events.filter(e => e.severity === "CRITICAL").length;
+  const highAlerts = currentScenario.events.filter(e => e.severity === "HIGH").length;
+
   const handleAlertSelect = (alert) => {
     if (selectedAlerts.includes(alert)) {
       setSelectedAlerts(selectedAlerts.filter(a => a !== alert));
