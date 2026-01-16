@@ -48,16 +48,16 @@ export const createApp = () => {
   app.use(express.json({ limit: "1mb" }));
 
   const allowedOrigins = parseAllowedOrigins();
-  app.use(
-    cors({
-      origin: (origin, cb) => {
-        if (!origin) return cb(null, true);
-        if (allowedOrigins.includes("*")) return cb(null, true);
-        if (allowedOrigins.includes(origin)) return cb(null, true);
-        return cb(new Error("Not allowed by CORS"));
-      },
-    })
-  );
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGINS?.split(",") || [
+      "http://localhost:5173",
+      "http://localhost:3000",
+      "https://cy-lmsproject-6fm3asp01-akshatha-js-projects.vercel.app", // Add this
+    ],
+    credentials: true,
+  })
+);
 
   app.use((req, res, next) => {
     const id =
