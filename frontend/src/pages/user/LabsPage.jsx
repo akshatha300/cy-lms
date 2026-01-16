@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import PhishingLab from "./PhishingLab.jsx";
+import PhishingDetectionLab from "./labs/PhishingDetectionLab.jsx";
+import PasswordSecurityLab from "./labs/PasswordSecurityLab.jsx";
+import NetworkAnalysisLab from "./labs/NetworkAnalysisLab.jsx";
+import WebSecurityLab from "./labs/WebSecurityLab.jsx";
+import EncryptionLab from "./labs/EncryptionLab.jsx";
+import SIEMLab from "./labs/SIEMLab.jsx";
+import SystemHardeningLab from "./labs/SystemHardeningLab.jsx";
+import IncidentResponseLab from "./labs/IncidentResponseLab.jsx";
+import DigitalForensicsLab from "./labs/DigitalForensicsLab.jsx";
 import { useParams, useNavigate } from "react-router-dom";
 import { getLabs, startLabAttempt, getMyLabAttempts, completeLabAttempt, getRoleLabs, getUserRole } from "../../api/roleBasedApi";
 import { useAuthContext } from "../../context/AuthContext";
@@ -59,7 +67,6 @@ const LabsPage = () => {
     try {
       // Start lab attempt
       const attempt = await startLabAttempt(lab._id, roleId);
-      // Set both the selected lab and the active attempt
       setSelectedLab(lab);
       setActiveAttempt(attempt);
     } catch (err) {
@@ -79,6 +86,54 @@ const LabsPage = () => {
       console.error("Failed to complete lab:", err);
     }
   };
+  const getLabComponent = (lab) => {
+  console.log("Lab data:", lab);
+  console.log("Lab scenario:", lab.scenario);
+  console.log("Lab name:", lab.name);
+  
+  switch (lab.scenario) {
+    case "attack":
+      // Route to specific attack labs based on lab name
+      if (lab.name.toLowerCase().includes('phishing') || lab.name.toLowerCase().includes('email') || lab.name.toLowerCase().includes('identify') || lab.name.toLowerCase().includes('aws') || lab.name.toLowerCase().includes('privilege') || lab.name.toLowerCase().includes('escalation') || lab.name.toLowerCase().includes('indicators')) {
+        return <PhishingDetectionLab lab={lab} attempt={activeAttempt} onComplete={handleCompleteLab} onCancel={() => { setActiveAttempt(null); setSelectedLab(null); }} />;
+      }
+      if (lab.name.toLowerCase().includes('password') || lab.name.toLowerCase().includes('brute') || lab.name.toLowerCase().includes('crack') || lab.name.toLowerCase().includes('attack') || lab.name.toLowerCase().includes('security')) {
+        return <PasswordSecurityLab lab={lab} attempt={activeAttempt} onComplete={handleCompleteLab} onCancel={() => { setActiveAttempt(null); setSelectedLab(null); }} />;
+      }
+      if (lab.name.toLowerCase().includes('encryption') || lab.name.toLowerCase().includes('crypto') || lab.name.toLowerCase().includes('cipher') || lab.name.toLowerCase().includes('aes') || lab.name.toLowerCase().includes('hash')) {
+        return <EncryptionLab lab={lab} attempt={activeAttempt} onComplete={handleCompleteLab} onCancel={() => { setActiveAttempt(null); setSelectedLab(null); }} />;
+      }
+      if (lab.name.toLowerCase().includes('web') || lab.name.toLowerCase().includes('xss') || lab.name.toLowerCase().includes('sql') || lab.name.toLowerCase().includes('injection') || lab.name.toLowerCase().includes('vulnerability') || lab.name.toLowerCase().includes('hack')) {
+        return <WebSecurityLab lab={lab} attempt={activeAttempt} onComplete={handleCompleteLab} onCancel={() => { setActiveAttempt(null); setSelectedLab(null); }} />;
+      }
+      break;
+      
+    case "defense":
+      // Route to specific defense labs based on lab name
+      if (lab.name.toLowerCase().includes('network') || lab.name.toLowerCase().includes('analysis') || lab.name.toLowerCase().includes('monitoring') || lab.name.toLowerCase().includes('traffic') || lab.name.toLowerCase().includes('packet') || lab.name.toLowerCase().includes('siem') || lab.name.toLowerCase().includes('log') || lab.name.toLowerCase().includes('event') || lab.name.toLowerCase().includes('correlation')) {
+        return <NetworkAnalysisLab lab={lab} attempt={activeAttempt} onComplete={handleCompleteLab} onCancel={() => { setActiveAttempt(null); setSelectedLab(null); }} />;
+      }
+      if (lab.name.toLowerCase().includes('hardening') || lab.name.toLowerCase().includes('security') || lab.name.toLowerCase().includes('config') || lab.name.toLowerCase().includes('system') || lab.name.toLowerCase().includes('server') || lab.name.toLowerCase().includes('patch')) {
+        return <SystemHardeningLab lab={lab} attempt={activeAttempt} onComplete={handleCompleteLab} onCancel={() => { setActiveAttempt(null); setSelectedLab(null); }} />;
+      }
+      if (lab.name.toLowerCase().includes('incident') || lab.name.toLowerCase().includes('response') || lab.name.toLowerCase().includes('breach') || lab.name.toLowerCase().includes('malware') || lab.name.toLowerCase().includes('outbreak')) {
+        return <IncidentResponseLab lab={lab} attempt={activeAttempt} onComplete={handleCompleteLab} onCancel={() => { setActiveAttempt(null); setSelectedLab(null); }} />;
+      }
+      if (lab.name.toLowerCase().includes('forensics') || lab.name.toLowerCase().includes('analysis') || lab.name.toLowerCase().includes('investigation') || lab.name.toLowerCase().includes('evidence') || lab.name.toLowerCase().includes('memory') || lab.name.toLowerCase().includes('file')) {
+        return <DigitalForensicsLab lab={lab} attempt={activeAttempt} onComplete={handleCompleteLab} onCancel={() => { setActiveAttempt(null); setSelectedLab(null); }} />;
+      }
+      break;
+      
+    default:
+      return (
+        <div style={{ padding: "20px", textAlign: "center" }}>
+          <h2>Lab Coming Soon</h2>
+          <p>This lab environment is under development.</p>
+        </div>
+      );
+  }
+};
+ 
 
   const getDifficultyColor = (difficulty) => {
     if (difficulty <= 2) return "#10b981";
@@ -87,9 +142,18 @@ const LabsPage = () => {
   };
 
   const getScenarioIcon = (scenario) => {
-    if (scenario === "attack") return "⚔️";
-    if (scenario === "defense") return "🛡️";
-    return "🔄";
+    const icons = {
+      phishing: "🎣",
+      password: "🔐",
+      network: "🌐",
+      encryption: "🔐",
+      web: "🌐",
+      siem: "📊",
+      hardening: "🛡️",
+      incident: "🚨",
+      forensics: "🔍"
+    };
+    return icons[scenario] || "🔬";
   };
 
   if (loading) {
@@ -103,15 +167,9 @@ const LabsPage = () => {
 
   if (selectedLab && activeAttempt) {
     return (
-      <PhishingLab
-        lab={selectedLab}
-        attempt={activeAttempt}
-        onComplete={handleCompleteLab}
-        onCancel={() => {
-          setActiveAttempt(null);
-          setSelectedLab(null);
-        }}
-      />
+      <div>
+        {getLabComponent(selectedLab)}
+      </div>
     );
   }
 
@@ -151,7 +209,7 @@ const LabsPage = () => {
           fontSize: "14px",
           fontWeight: "600"
         }}>
-          {roleInfo.labCount || labs.length} Labs
+          {roleInfo.labCount || labs.length} Comprehensive Labs
         </div>
       </div>
 
@@ -205,6 +263,7 @@ const LabsPage = () => {
                 e.currentTarget.style.transform = "translateY(0)";
                 e.currentTarget.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
               }}
+              onClick={() => handleStartLab(lab)}
             >
               {/* Lab Header */}
               <div style={{ 
@@ -272,7 +331,10 @@ const LabsPage = () => {
 
               {/* Start Lab Button */}
               <button
-                onClick={() => handleStartLab(lab)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleStartLab(lab);
+                }}
                 style={{
                   width: "100%",
                   padding: "12px 20px",
