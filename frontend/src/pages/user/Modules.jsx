@@ -1,12 +1,39 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getRoleModules, getUserRole } from "../../api/roleBasedApi";
+import { getUserRole } from "../../api/roleBasedApi";
 
 const Modules = () => {
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [roleInfo, setRoleInfo] = useState({ roleFiltered: false, roleName: null, roleId: null });
+  const [roleInfo, setRoleInfo] = useState({ roleFiltered: false, roleName: null, roleId: null, mandatoryModules: [], optionalModules: [] });
+
+  const normalizeModuleResponse = (data) => {
+    if (Array.isArray(data)) {
+      return {
+        modules: data,
+        moduleCount: data.length,
+      };
+    }
+
+    if (data && typeof data === "object") {
+      const modules = data.modules || [];
+      const moduleCount =
+        typeof data.moduleCount === "number"
+          ? data.moduleCount
+          : modules.length;
+
+      return {
+        modules,
+        moduleCount,
+      };
+    }
+
+    return {
+      modules: [],
+      moduleCount: 0,
+    };
+  };
 
   useEffect(() => {
     const loadModules = async () => {
@@ -20,32 +47,55 @@ const Modules = () => {
         if (userRole && userRole.primaryRole) {
           console.log("Primary role found:", userRole.primaryRole.name);
           
-          // Get modules for the user's role
-          const data = await getRoleModules(userRole.primaryRole._id);
-          console.log("Modules data received:", data);
-          console.log("Modules array:", data.modules);
-          console.log("Module count:", data.moduleCount);
+          // Get ALL modules first
+          const { getModules } = await import("../../api/moduleApi");
+          const allModulesResponse = await getModules();
+          const { modules: allModules, moduleCount } = normalizeModuleResponse(allModulesResponse);
           
-          setModules(data.modules || []);
+          // Define mandatory modules for each role
+          const mandatoryModules = getMandatoryModules(userRole.primaryRole.name);
+          
+          // Filter mandatory modules from all modules
+          const mandatoryModulesData = allModules.filter(module => 
+            mandatoryModules.some(mandatoryModule => 
+              module.title.toLowerCase().includes(mandatoryModule.toLowerCase())
+            )
+          );
+          
+          // Optional modules are all other modules
+          const optionalModulesData = allModules.filter(module => 
+            !mandatoryModules.some(mandatoryModule => 
+              module.title.toLowerCase().includes(mandatoryModule.toLowerCase())
+            )
+          );
+          
+          setModules(allModules);
           setRoleInfo({
             roleFiltered: true,
             roleName: userRole.primaryRole.name,
             roleId: userRole.primaryRole._id,
-            moduleCount: data.moduleCount
+            moduleCount,
+            mandatoryModules: mandatoryModulesData,
+            optionalModules: optionalModulesData
           });
         } else {
           console.log("No primary role found, loading all modules");
           
           // No role selected, show all modules
           const { getModules } = await import("../../api/moduleApi");
-          const data = await getModules();
-          console.log("All modules data:", data);
+          const allModulesResponse = await getModules();
+          console.log("All modules data:", allModulesResponse);
+
+          const { modules: allModules, moduleCount } = normalizeModuleResponse(allModulesResponse);
           
-          setModules(data.modules || []);
+          setModules(allModules);
           setRoleInfo({
             roleFiltered: false,
             roleName: null,
-            roleId: null
+            roleId: null,
+            moduleCount,
+            mandatoryModules: [], // No mandatory modules without role
+            optionalModules: allModules // All modules are optional
           });
         }
       } catch (err) {
@@ -58,7 +108,76 @@ const Modules = () => {
 
     loadModules();
   }, []);
-   const getDifficultyColor = (difficulty) => {
+
+  // Define mandatory modules for each role
+  const getMandatoryModules = (roleName) => {
+    const mandatoryMap = {
+      "SOC Analyst L1": [
+        "Phishing Awareness",
+        "Malware Basics",
+        "SIEM Fundamentals",
+        "Incident Response Procedures"
+      ],
+      "Penetration Tester": [
+        "Network Penetration Testing",
+        "Exploit Development Basics",
+        "Web Application Security",
+        "Secure Coding Practices"
+      ],
+      "Cloud Security Engineer": [
+        "Cloud Security Fundamentals",
+        "AWS Security Essentials",
+        "Security Compliance Frameworks",
+        "DevSecOps Fundamentals"
+      ],
+      "Malware Analyst": [
+        "Malware Basics",
+        "Threat Intelligence Basics",
+        "Incident Response Procedures",
+        "SIEM Fundamentals"
+      ],
+      "Incident Response Lead": [
+        "Incident Response Procedures",
+        "SIEM Fundamentals",
+        "Threat Intelligence Basics",
+        "Malware Basics"
+      ],
+      "Security Auditor": [
+        "Security Auditing",
+        "Security Compliance Frameworks",
+        "Data Protection & Privacy",
+        "Risk Management"
+      ],
+      "Security Architect": [
+        "Network Security Fundamentals",
+        "Security Compliance Frameworks",
+        "Data Protection & Privacy",
+        "DevSecOps Fundamentals"
+      ],
+      "Digital Forensics Analyst": [
+        "Incident Response Procedures",
+        "Malware Basics",
+        "Threat Intelligence Basics",
+        "Data Protection & Privacy"
+      ],
+      "Application Security Engineer": [
+        "Web Application Security",
+        "Secure Coding Practices",
+        "DevSecOps Fundamentals",
+        "Password Security"
+      ],
+      "Threat Intelligence Analyst": [
+        "Threat Intelligence Basics",
+        "SIEM Fundamentals",
+        "Malware Basics",
+        "Social Engineering"
+      ]
+    };
+    
+    return mandatoryMap[roleName] || [];
+  };
+
+  const getDifficultyColor = (difficulty) => {
   // Convert to string if it's a number
   const diffStr = difficulty?.toString().toLowerCase();
   
@@ -133,7 +252,7 @@ const Modules = () => {
               color: "#6b7280", 
               fontSize: "14px" 
             }}>
-              Your personalized learning path for {roleInfo.roleName}
+              All modules available for {roleInfo.roleName} (🔒 = Mandatory)
             </p>
           )}
         </div>
@@ -190,139 +309,156 @@ const Modules = () => {
           gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
           gap: "20px"
         }}>
-          {modules.map((module) => (
-            <div
-              key={module._id}
-              style={{
-                border: "2px solid #e2e8f0",
-                borderRadius: "12px",
-                padding: "20px",
-                backgroundColor: "#ffffff",
-                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                transition: "all 0.2s ease-in-out",
-                cursor: "pointer"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-4px)";
-                e.currentTarget.style.boxShadow = "0 8px 12px -2px rgba(0, 0, 0, 0.15)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
-              }}
-            >
-              {/* Module Header */}
-              <div style={{ 
-                display: "flex", 
-                justifyContent: "space-between", 
-                alignItems: "flex-start", 
-                marginBottom: "12px" 
-              }}>
-                <div style={{ flex: 1 }}>
-                  <h3 style={{ 
-                    margin: "0 0 8px", 
-                    fontSize: "18px", 
-                    fontWeight: "bold", 
-                    color: "#1f2937",
-                    lineHeight: "1.3"
-                  }}>
-                    {module.title}
-                  </h3>
-                  <p style={{ 
-                    margin: "0 0 12px", 
-                    color: "#6b7280", 
-                    fontSize: "14px",
-                    lineHeight: "1.4"
-                  }}>
-                    {module.description}
-                  </p>
-                </div>
-                <div style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  backgroundColor: getDifficultyColor(module.difficulty),
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "white",
-                  fontSize: "16px",
-                  fontWeight: "bold"
-                }}>
-                  <div style={{
-  width: "40px",
-  height: "40px",
-  borderRadius: "50%",
-  backgroundColor: getDifficultyColor(module.difficulty),
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: "white",
-  fontSize: "16px",
-  fontWeight: "bold"
-}}>
-  {module.difficulty?.toString()?.charAt(0)?.toUpperCase() || "M"}
-</div>
-                
-                </div>
-              </div>
-
-              {/* Module Details */}
-              <div style={{ 
-                display: "flex", 
-                gap: "16px", 
-                marginBottom: "16px",
-                fontSize: "13px",
-                color: "#4b5563"
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  <span>{getModuleIcon(module.type)}</span>
-                  <span style={{ fontWeight: "600" }}>{module.type || "Reading"}</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  <span>⏱️</span>
-                  <span>{getDurationDisplay(module.duration)}</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  <span>📊</span>
-                  <span>{module.topics?.length || 0} topics</span>
-                </div>
-              </div>
-
-              {/* View Module Button */}
-              <Link
-                to={`/app/modules/${module._id}`}
+          {modules.map((module) => {
+            // Check if this module is mandatory
+            const isMandatory = roleInfo.mandatoryModules && 
+              roleInfo.mandatoryModules.some(mandatoryModule => mandatoryModule._id === module._id);
+            
+            return (
+              <div
+                key={module._id}
                 style={{
-                  textDecoration: "none"
+                  border: isMandatory ? "2px solid #fbbf24" : "2px solid #e2e8f0",
+                  borderRadius: "12px",
+                  padding: "20px",
+                  backgroundColor: isMandatory ? "#fffbeb" : "#ffffff",
+                  boxShadow: isMandatory 
+                    ? "0 4px 6px -1px rgba(251, 191, 36, 0.1)"
+                    : "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                  transition: "all 0.2s ease-in-out",
+                  cursor: "pointer",
+                  position: "relative"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-4px)";
+                  e.currentTarget.style.boxShadow = isMandatory
+                    ? "0 8px 12px -2px rgba(251, 191, 36, 0.15)"
+                    : "0 8px 12px -2px rgba(0, 0, 0, 0.15)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = isMandatory
+                    ? "0 4px 6px -1px rgba(251, 191, 36, 0.1)"
+                    : "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
                 }}
               >
-                <button
-                  style={{
-                    width: "100%",
-                    padding: "12px 20px",
-                    backgroundColor: "#10b981",
+                {/* Mandatory Badge */}
+                {isMandatory && (
+                  <div style={{
+                    position: "absolute",
+                    top: "10px",
+                    right: "10px",
+                    backgroundColor: "#dc2626",
                     color: "white",
-                    border: "none",
-                    borderRadius: "8px",
+                    padding: "4px 8px",
+                    borderRadius: "12px",
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px"
+                  }}>
+                    🔒 Mandatory
+                  </div>
+                )}
+                
+                <div style={{ 
+                  display: "flex", 
+                  justifyContent: "space-between", 
+                  alignItems: "flex-start", 
+                  marginBottom: "12px" 
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <h3 style={{ 
+                      margin: "0 0 8px", 
+                      fontSize: "18px", 
+                      fontWeight: "bold", 
+                      color: isMandatory ? "#92400e" : "#1f2937",
+                      lineHeight: "1.3"
+                    }}>
+                      {isMandatory && "🔒 "}{module.title}
+                    </h3>
+                    <p style={{ 
+                      margin: "0 0 12px", 
+                      color: "#6b7280", 
+                      fontSize: "14px",
+                      lineHeight: "1.4"
+                    }}>
+                      {module.description}
+                    </p>
+                  </div>
+                  <div style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    backgroundColor: getDifficultyColor(module.difficulty),
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "white",
                     fontSize: "16px",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    transition: "all 0.2s ease-in-out"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#059669";
-                    e.currentTarget.style.transform = "scale(1.02)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#10b981";
-                    e.currentTarget.style.transform = "scale(1)";
+                    fontWeight: "bold"
+                  }}>
+                    {module.difficulty?.toString()?.charAt(0)?.toUpperCase() || "M"}
+                  </div>
+                </div>
+
+                <div style={{ 
+                  display: "flex", 
+                  gap: "16px", 
+                  marginBottom: "16px",
+                  fontSize: "13px",
+                  color: "#4b5563"
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>{getModuleIcon(module.type)}</span>
+                    <span style={{ fontWeight: "600" }}>{module.type || "Reading"}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>⏱️</span>
+                    <span>{getDurationDisplay(module.duration)}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>📊</span>
+                    <span>{module.topics?.length || 0} topics</span>
+                  </div>
+                </div>
+
+                {/* View Module Button */}
+                <Link
+                  to={`/app/modules/${module._id}`}
+                  style={{
+                    textDecoration: "none"
                   }}
                 >
-                  🚀 View Module
-                </button>
-              </Link>
-            </div>
-          ))}
+                  <button
+                    style={{
+                      width: "100%",
+                      padding: "12px 20px",
+                      backgroundColor: isMandatory ? "#dc2626" : "#10b981",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontSize: "16px",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease-in-out"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = isMandatory ? "#b91c1c" : "#059669";
+                      e.currentTarget.style.transform = "scale(1.02)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = isMandatory ? "#dc2626" : "#10b981";
+                      e.currentTarget.style.transform = "scale(1)";
+                    }}
+                  >
+                    {isMandatory ? "🔒 View Mandatory Module" : "🚀 View Module"}
+                  </button>
+                </Link>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
