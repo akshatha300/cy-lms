@@ -9,13 +9,14 @@ const WebSecurityLab = ({ lab, attempt, onComplete, onCancel }) => {
   const [userAnalysis, setUserAnalysis] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(0);
+  const [hasError, setHasError] = useState(false);
 
   const webScenarios = [
     {
       id: 1,
       title: "XSS Attack Detection",
       description: "Find Cross-Site Scripting vulnerabilities",
-      vulnerableCode: `<div id="user-profile" onclick="alert('XSS detected')">Welcome ${user.name}!</div>`,
+      vulnerableCode: `<div id="user-profile" onclick="alert('XSS detected')">Welcome User!</div>`,
       vulnerabilities: ["Reflected XSS", "DOM manipulation", "Client-side script injection"],
       hints: ["Check input sanitization", "Look for alert() calls", "Test with various payloads"]
     },
