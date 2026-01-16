@@ -147,14 +147,36 @@ const NetworkAnalysisLab = ({ lab, attempt, onComplete, onCancel }) => {
         padding: "24px", 
         borderRadius: "12px", 
         marginBottom: "24px",
-        textAlign: "center"
+        textAlign: "center",
+        position: "relative"
       }}>
+        <button
+          onClick={onCancel}
+          style={{
+            position: "absolute",
+            left: "24px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            backgroundColor: "transparent",
+            border: "1px solid rgba(255, 255, 255, 0.3)",
+            color: "white",
+            padding: "8px 16px",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontSize: "14px",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px"
+          }}
+        >
+          ← Back to Labs
+        </button>
         <Globe size={48} style={{ marginBottom: "16px" }} />
         <h1 style={{ margin: "0 0 8px", fontSize: "28px" }}>
           Network Traffic Analysis Lab
         </h1>
         <p style={{ margin: 0, fontSize: "16px", opacity: 0.9 }}>
-          {currentScenario.description}
+          Analyze network traffic and detect port scanning activity
         </p>
       </div>
 

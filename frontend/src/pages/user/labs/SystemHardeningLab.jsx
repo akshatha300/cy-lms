@@ -135,9 +135,31 @@ const SystemHardeningLab = ({ lab, attempt, onComplete, onCancel }) => {
         padding: "24px", 
         borderRadius: "12px", 
         marginBottom: "24px",
-        textAlign: "center"
+        textAlign: "center",
+        position: "relative"
       }}>
-        <Settings size={48} style={{ marginBottom: "16px" }} />
+        <button
+          onClick={onCancel}
+          style={{
+            position: "absolute",
+            left: "24px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            backgroundColor: "transparent",
+            border: "1px solid rgba(255, 255, 255, 0.3)",
+            color: "white",
+            padding: "8px 16px",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontSize: "14px",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px"
+          }}
+        >
+          ← Back to Labs
+        </button>
+        <Shield size={48} style={{ marginBottom: "16px" }} />
         <h1 style={{ margin: "0 0 8px", fontSize: "28px" }}>
           System Hardening Lab
         </h1>

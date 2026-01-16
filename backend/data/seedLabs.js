@@ -18,10 +18,9 @@ const seedLabs = async () => {
       skillMap[s.name] = s._id;
     });
 
-        const labsData = [
-      // Essential Introductory Labs (2)
+    const labsData = [
       {
-        name: "Identify Phishing Indicators",
+        name: "PhishingDetectionLab",
         description: "Review a sample email and spot phishing red flags",
         skillId: skillMap["Log Analysis"],
         difficulty: 1,
@@ -33,21 +32,7 @@ const seedLabs = async () => {
         tags: ["phishing", "email", "basics"],
       },
       {
-        name: "Create a Strong Password",
-        description: "Generate and validate a strong password using best practices",
-        skillId: skillMap["IAM (Identity & Access Management)"],
-        difficulty: 1,
-        scenario: "defense",
-        objectiveText: "Create a password that meets all strength criteria",
-        environment: "simulated",
-        timeLimit: 8,
-        requiredTools: ["Password Manager"],
-        tags: ["password", "basics", "practice"],
-      },
-
-      // Core SOC Labs (3)
-      {
-        name: "Brute Force Detection Lab",
+        name: "PasswordSecurityLab",
         description: "Analyze authentication logs to detect brute force attacks",
         skillId: skillMap["Log Analysis"],
         difficulty: 2,
@@ -59,7 +44,7 @@ const seedLabs = async () => {
         tags: ["log-analysis", "brute-force", "authentication"],
       },
       {
-        name: "Port Scan Detection",
+        name: "NetworkAnalysisLab",
         description: "Analyze network traffic to detect port scanning activity",
         skillId: skillMap["Network Traffic Analysis"],
         difficulty: 2,
@@ -71,21 +56,31 @@ const seedLabs = async () => {
         tags: ["network", "reconnaissance", "port-scan"],
       },
       {
-        name: "Ransomware Incident Response",
-        description: "Respond to active ransomware attack",
-        skillId: skillMap["Incident Response"],
-        difficulty: 4,
+        name: "EncryptionLab",
+        description: "Generate and validate a strong password using best practices",
+        skillId: skillMap["IAM (Identity & Access Management)"],
+        difficulty: 1,
         scenario: "defense",
-        objectiveText: "Contain the attack, identify patient zero, determine scope, and create recovery plan",
+        objectiveText: "Create a password that meets all strength criteria",
         environment: "simulated",
-        timeLimit: 60,
-        requiredTools: ["EDR", "SIEM", "Forensics Tools"],
-        tags: ["incident-response", "ransomware", "containment"],
+        timeLimit: 8,
+        requiredTools: ["Password Manager"],
+        tags: ["password", "basics", "practice"],
       },
-
-      // Core Pentesting Labs (3)
       {
-        name: "Web Application Vulnerability Scan",
+        name: "SIEMLab",
+        description: "Analyze and correlate security events from multiple sources",
+        skillId: skillMap["Log Analysis"],
+        difficulty: 3,
+        scenario: "defense",
+        objectiveText: "Identify patterns and correlations between security events",
+        environment: "simulated",
+        timeLimit: 25,
+        requiredTools: ["SIEM", "Log Management", "Correlation Rules"],
+        tags: ["siem", "correlation", "event-analysis"],
+      },
+      {
+        name: "WebSecurityLab",
         description: "Perform comprehensive vulnerability assessment of a web application",
         skillId: skillMap["Vulnerability Assessment"],
         difficulty: 2,
@@ -97,7 +92,7 @@ const seedLabs = async () => {
         tags: ["vulnerability-assessment", "web-app", "owasp"],
       },
       {
-        name: "Linux Privilege Escalation",
+        name: "SystemHardeningLab",
         description: "Escalate from low-privilege user to root on Linux system",
         skillId: skillMap["Privilege Escalation"],
         difficulty: 3,
@@ -109,33 +104,19 @@ const seedLabs = async () => {
         tags: ["privesc", "linux", "post-exploitation"],
       },
       {
-        name: "SQL Injection Exploit Chain",
-        description: "Chain SQL injection vulnerabilities to achieve remote code execution",
-        skillId: skillMap["Exploit Development"],
+        name: "IncidentResponseLab",
+        description: "Respond to active ransomware attack",
+        skillId: skillMap["Incident Response"],
         difficulty: 4,
-        scenario: "attack",
-        objectiveText: "Exploit SQL injection to read database, write webshell, and gain shell access",
-        environment: "docker",
-        timeLimit: 50,
-        requiredTools: ["sqlmap", "Burp Suite", "curl"],
-        tags: ["exploit-dev", "sql-injection", "web"],
-      },
-
-      // Cloud & Malware Labs (2)
-      {
-        name: "AWS IAM Privilege Escalation",
-        description: "Identify and exploit AWS IAM misconfigurations",
-        skillId: skillMap["IAM (Identity & Access Management)"],
-        difficulty: 3,
-        scenario: "attack",
-        objectiveText: "Escalate from limited IAM user to full admin access",
-        environment: "cloud",
-        timeLimit: 40,
-        requiredTools: ["AWS CLI", "Pacu", "ScoutSuite"],
-        tags: ["iam", "aws", "cloud-security"],
+        scenario: "defense",
+        objectiveText: "Contain the attack, identify patient zero, determine scope, and create recovery plan",
+        environment: "simulated",
+        timeLimit: 60,
+        requiredTools: ["EDR", "SIEM", "Forensics Tools"],
+        tags: ["incident-response", "ransomware", "containment"],
       },
       {
-        name: "Static Malware Analysis",
+        name: "DigitalForensicsLab",
         description: "Perform static analysis on a malicious binary",
         skillId: skillMap["Malware Analysis"],
         difficulty: 3,
