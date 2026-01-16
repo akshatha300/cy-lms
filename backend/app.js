@@ -53,7 +53,8 @@ app.use(
     origin: process.env.CORS_ORIGINS?.split(",") || [
       "http://localhost:5173",
       "http://localhost:3000",
-      "https://cy-lmsproject-6fm3asp01-akshatha-js-projects.vercel.app", // Add this
+      "https://cy-lmsproject-6fm3asp01-akshatha-js-projects.vercel.app",
+      "https://cy-lmsproject-git-main-akshatha-js-projects.vercel.app", // Add this
     ],
     credentials: true,
   })
