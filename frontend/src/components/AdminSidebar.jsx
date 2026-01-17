@@ -28,10 +28,10 @@ const AdminSidebar = () => {
         <NavLink to="/admin/users" style={linkStyle}>
           Users
         </NavLink>
-        <NavLink to="/admin/modules" style={linkStyle}>
+        <NavLink to="/admin/view-modules" style={linkStyle}>
           Modules
         </NavLink>
-        <NavLink to="/admin/labs" style={linkStyle}>
+        <NavLink to="/admin/view-labs" style={linkStyle}>
           Labs
         </NavLink>
         <NavLink to="/admin/questions" style={linkStyle}>

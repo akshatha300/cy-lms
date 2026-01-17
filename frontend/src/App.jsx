@@ -15,8 +15,10 @@ import LabsPage from "./pages/user/LabsPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageUsers from "./pages/admin/ManageUsers";
 import ManageModules from "./pages/admin/ManageModules";
+import ViewModules from "./pages/admin/ViewModules";
 import ManageQuestions from "./pages/admin/ManageQuestions";
 import ManageLabs from "./pages/admin/ManageLabs";
+import ViewLabs from "./pages/admin/ViewLabs";
 import Logs from "./pages/admin/Logs";
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -61,8 +63,8 @@ function App() {
       >
         <Route index element={<AdminDashboard />} />
         <Route path="users" element={<ManageUsers />} />
-        <Route path="modules" element={<ManageModules />} />
-        <Route path="labs" element={<ManageLabs />} />
+        <Route path="view-modules" element={<ViewModules />} />
+        <Route path="view-labs" element={<ViewLabs />} />
         <Route path="questions" element={<ManageQuestions />} />
         <Route path="logs" element={<Logs />} />
       </Route>
