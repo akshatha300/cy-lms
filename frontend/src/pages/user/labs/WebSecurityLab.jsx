@@ -9,7 +9,6 @@ const WebSecurityLab = ({ lab, attempt, onComplete, onCancel }) => {
   const [userAnalysis, setUserAnalysis] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(0);
-  const [hasError, setHasError] = useState(false);
 
   const webScenarios = [
     {
@@ -24,7 +23,7 @@ const WebSecurityLab = ({ lab, attempt, onComplete, onCancel }) => {
       id: 2,
       title: "SQL Injection Prevention",
       description: "Identify and block SQL injection attacks",
-      vulnerableQuery: "SELECT * FROM users WHERE id = '" + userInput + "'",
+      vulnerableQuery: "SELECT * FROM users WHERE id = 'user_input'",
       vulnerabilities: ["Union-based SQLi", "Blind SQL injection", "Authentication bypass"],
       hints: ["Use parameterized queries", "Implement input validation", "Use prepared statements"]
     }

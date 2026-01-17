@@ -18,8 +18,16 @@ export const chatWithTutor = async ({ userId, message, history = [] }) => {
     };
   }
 
+  // Debug: Check if API key is loaded
+  console.log("=== DEBUG INFO ===");
+  console.log("GROQ_API_KEY exists:", !!process.env.GROQ_API_KEY);
+  console.log("GROQ_API_KEY length:", process.env.GROQ_API_KEY?.length);
+  console.log("NODE_ENV:", process.env.NODE_ENV);
+  console.log("==================");
+
   // If Groq API key is not configured, return a simple built-in response.
   if (!process.env.GROQ_API_KEY) {
+    console.log("GROQ_API_KEY is missing, returning fallback response");
     return {
       reply:
         "I'm your cybersecurity tutor. I currently don't have access to the full AI model, but I can still give you general guidance about threats like malware, phishing, and weak passwords.",
