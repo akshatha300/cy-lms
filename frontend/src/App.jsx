@@ -19,7 +19,6 @@ import ViewModules from "./pages/admin/ViewModules";
 import ManageQuestions from "./pages/admin/ManageQuestions";
 import ManageLabs from "./pages/admin/ManageLabs";
 import ViewLabs from "./pages/admin/ViewLabs";
-import Logs from "./pages/admin/Logs";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -66,7 +65,6 @@ function App() {
         <Route path="view-modules" element={<ViewModules />} />
         <Route path="view-labs" element={<ViewLabs />} />
         <Route path="questions" element={<ManageQuestions />} />
-        <Route path="logs" element={<Logs />} />
       </Route>
 
       {/* Fallback */}

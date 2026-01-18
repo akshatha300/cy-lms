@@ -37,10 +37,6 @@ const AdminSidebar = () => {
         <NavLink to="/admin/questions" style={linkStyle}>
           Questions
         </NavLink>
-        <NavLink to="/admin/logs" style={linkStyle}>
-          Logs
-          
-        </NavLink>
       </nav>
     </aside>
   );
