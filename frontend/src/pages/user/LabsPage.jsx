@@ -578,7 +578,7 @@ const LabsPage = () => {
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <span>🔧</span>
-                    <span>{lab.requiredTools?.[0] || "Basic Tools"}</span>
+                    <span>{lab.requiredTools && lab.requiredTools.length > 0 ? lab.requiredTools[0] : "Basic Tools"}</span>
                   </div>
                 </div>
                 <button
