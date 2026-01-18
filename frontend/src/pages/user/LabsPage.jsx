@@ -115,18 +115,23 @@ const LabsPage = () => {
         const mandatoryLabs = getMandatoryLabs(userRole.primaryRole.name);
 
         // Filter mandatory labs from all labs
-        const mandatoryLabsData = allLabs.filter(lab =>
-          mandatoryLabs.some(mandatoryLab =>
-            lab.name.toLowerCase().includes(mandatoryLab.toLowerCase())
-          )
-        );
+        const mandatoryLabsData = allLabs.filter(lab => {
+          const labName = lab.name || lab.uiName || "";
+          console.log("Checking lab:", labName, "against mandatory:", mandatoryLabs);
+          return mandatoryLabs.some(mandatoryLab =>
+            labName.toLowerCase().includes(mandatoryLab.toLowerCase()) ||
+            mandatoryLab.toLowerCase().includes(labName.toLowerCase())
+          );
+        });
 
         // Optional labs are all other labs
-        const optionalLabsData = allLabs.filter(lab =>
-          !mandatoryLabs.some(mandatoryLab =>
-            lab.name.toLowerCase().includes(mandatoryLab.toLowerCase())
-          )
-        );
+        const optionalLabsData = allLabs.filter(lab => {
+          const labName = lab.name || lab.uiName || "";
+          return !mandatoryLabs.some(mandatoryLab =>
+            labName.toLowerCase().includes(mandatoryLab.toLowerCase()) ||
+            mandatoryLab.toLowerCase().includes(labName.toLowerCase())
+          );
+        });
 
         labsData = allLabs; // User can access ALL labs
         setRoleInfo({
