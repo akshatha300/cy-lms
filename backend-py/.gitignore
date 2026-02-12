@@ -1,0 +1,7 @@
+# Ignore the virtual environment created for backend-py
+venv/
+# Python bytecode
+__pycache__/
+*.pyc
+.env
+.env.*
