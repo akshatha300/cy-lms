@@ -21,6 +21,7 @@ import skillRoutes from "./routes/skillRoutes.js";
 import skillProgressRoutes from "./routes/skillProgressRoutes.js";
 import jobReadinessRoutes from "./routes/jobReadinessRoutes.js";
 import labRoutes from "./routes/labRoutes.js";
+import { runCode, evaluateCode, submitLab } from "./controllers/codeExecController.js";
 
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import logger from "./utils/logger.js";
@@ -131,6 +132,11 @@ app.use(
   app.use("/api/skill-progress", skillProgressRoutes);
   app.use("/api/job-readiness", jobReadinessRoutes);
   app.use("/api/labs", labRoutes);
+
+  // Python Code Execution Routes
+  app.post("/run", runCode);
+  app.post("/evaluate", evaluateCode);
+  app.post("/submit", submitLab);
 
   app.get("/", (req, res) => {
     res.send("Cybersecurity LMS Backend Running");

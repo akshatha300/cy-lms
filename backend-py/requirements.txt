@@ -1,0 +1,10 @@
+Flask
+Flask-CORS
+pandas
+numpy<2.0.0
+scikit-learn
+xgboost
+matplotlib
+seaborn
+fastapi
+uvicorn

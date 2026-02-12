@@ -8,6 +8,7 @@ import SIEMLab from "./labs/SIEMLab.jsx";
 import SystemHardeningLab from "./labs/SystemHardeningLab.jsx";
 import IncidentResponseLab from "./labs/IncidentResponseLab.jsx";
 import DigitalForensicsLab from "./labs/DigitalForensicsLab.jsx";
+import MLLab from "./labs/MLLab.jsx";
 import { useParams, useNavigate } from "react-router-dom";
 import { getLabs, startLabAttempt, getMyLabAttempts, completeLabAttempt, getRoleLabs, getUserRole } from "../../api/roleBasedApi";
 import { useAuthContext } from "../../context/AuthContext";
@@ -48,6 +49,10 @@ const labComponentMap = {
   "digitalforensicslab": {
     component: DigitalForensicsLab,
     displayName: "DigitalForensicsLab"
+  },
+  "mllab": {
+    component: MLLab,
+    displayName: "ML Security Lab"
   }
 };
 
@@ -70,61 +75,77 @@ const LabsPage = () => {
   const loadData = async () => {
     try {
       console.log("Current user:", _user);
-      console.log("User role:", _user?.role);
-      console.log("Is admin:", _user?.isAdmin);
+      
+      // 1. Get User Role (Safely)
+      let userRole = null;
+      try {
+        userRole = await getUserRole();
+      } catch (e) {
+        console.warn("Error fetching user role:", e);
+      }
 
-      // First get user's selected role
-      const userRole = await getUserRole();
+      // 2. Get Labs from Backend (Safely)
+      let backendLabs = [];
+      try {
+        const res = await getLabs();
+        if (res) backendLabs = res;
+      } catch (e) {
+        console.warn("Error fetching labs from backend:", e);
+      }
 
-      let labsData;
+      // 3. Normalize Labs
+      const allLabs = backendLabs.map((lab) => {
+        const mapping = labComponentMap[lab.name?.toLowerCase()?.trim()];
+        return {
+          ...lab,
+          uiName: mapping?.displayName || lab.name
+        };
+      });
 
-      // Check if user is admin
+      // 4. INJECT ML LAB (Unconditionally)
+      if (!allLabs.find(l => l.name === "MLLab")) {
+          allLabs.push({
+              _id: "ml-security-lab-static-id",
+              name: "MLLab",
+              title: "ML Security Lab",
+              description: "Learn how to defend Machine Learning models against adversarial attacks.",
+              uiName: "ML Security Lab",
+              difficulty: "Advanced",
+              duration: "30 min",
+              scenario: "hardening",
+              requiredTools: ["Python", "Jupyter"],
+              timeLimit: 45
+          });
+      }
+
+      let labsData = allLabs;
+
+      // 5. Apply Role Logic
       if (_user?.role === 'admin' || _user?.isAdmin) {
-        console.log("User is admin, loading all labs");
-        // Admin sees ALL labs
-        const allLabs = (await getLabs())?.map((lab) => {
-          const mapping = labComponentMap[lab.name?.toLowerCase()?.trim()];
-          return {
-            ...lab,
-            uiName: mapping?.displayName || lab.name
-          };
-        }) || [];
-
-        labsData = allLabs;
         setRoleInfo({
           roleFiltered: false,
           roleName: "Admin",
           roleId: null,
           labCount: allLabs.length,
-          mandatoryLabs: [], // Admin has no mandatory labs
-          optionalLabs: allLabs // All labs are optional for admin
+          mandatoryLabs: [], 
+          optionalLabs: allLabs 
         });
       } else if (userRole && userRole.primaryRole) {
         console.log("User has role:", userRole.primaryRole.name);
-        // Get ALL labs first
-        const allLabsData = await getLabs();
-        const allLabs = (allLabsData || []).map((lab) => {
-          const mapping = labComponentMap[lab.name?.toLowerCase()?.trim()];
-          return {
-            ...lab,
-            uiName: mapping?.displayName || lab.name
-          };
-        });
-
+        
         // Define mandatory labs for each role
         const mandatoryLabs = getMandatoryLabs(userRole.primaryRole.name);
 
-        // Filter mandatory labs from all labs
+        // Filter mandatory labs 
         const mandatoryLabsData = allLabs.filter(lab => {
           const labName = lab.name || lab.uiName || "";
-          console.log("Checking lab:", labName, "against mandatory:", mandatoryLabs);
           return mandatoryLabs.some(mandatoryLab =>
             labName.toLowerCase().includes(mandatoryLab.toLowerCase()) ||
             mandatoryLab.toLowerCase().includes(labName.toLowerCase())
           );
         });
 
-        // Optional labs are all other labs
+        // Optional labs
         const optionalLabsData = allLabs.filter(lab => {
           const labName = lab.name || lab.uiName || "";
           return !mandatoryLabs.some(mandatoryLab =>
@@ -133,7 +154,6 @@ const LabsPage = () => {
           );
         });
 
-        labsData = allLabs; // User can access ALL labs
         setRoleInfo({
           roleFiltered: true,
           roleName: userRole.primaryRole.name,
@@ -143,33 +163,42 @@ const LabsPage = () => {
           optionalLabs: optionalLabsData
         });
       } else {
-        console.log("No role, loading all labs");
-        // No role selected, show all labs
-        const allLabs = (await getLabs())?.map((lab) => {
-          const mapping = labComponentMap[lab.name?.toLowerCase()?.trim()];
-          return {
-            ...lab,
-            uiName: mapping?.displayName || lab.name
-          };
-        }) || [];
-
-        labsData = allLabs;
+        // No role
         setRoleInfo({
           roleFiltered: false,
           roleName: null,
           roleId: null,
           labCount: allLabs.length,
-          mandatoryLabs: [], // No mandatory labs without role
-          optionalLabs: allLabs // All labs are optional
+          mandatoryLabs: [], 
+          optionalLabs: allLabs 
         });
       }
 
       console.log("Labs data loaded:", labsData);
-      const attemptsData = await getMyLabAttempts();
       setLabs(labsData);
-      setMyAttempts(attemptsData);
+
+      // Load Attempts safely
+      try {
+        const attemptsData = await getMyLabAttempts();
+        setMyAttempts(attemptsData);
+      } catch (e) {
+          console.warn("Failed to load attempts", e);
+          setMyAttempts([]);
+      }
+      
     } catch (err) {
       console.error("Failed to load labs:", err);
+      // Ensure specific fallback if everything crashes
+      setLabs([{
+          _id: "ml-security-lab-static-id",
+            name: "MLLab",
+            title: "ML Security Lab (Fallback)",
+            description: "Learn how to defend Machine Learning models against adversarial attacks.",
+            uiName: "ML Security Lab",
+            difficulty: "Advanced",
+            duration: "30 min",
+            scenario: "hardening"
+      }]);
     } finally {
       setLoading(false);
     }
@@ -233,6 +262,12 @@ const LabsPage = () => {
       console.log("Starting lab with name:", lab.name);
       console.log("Lab object:", lab);
 
+      if (lab._id === "ml-security-lab-static-id") {
+          setSelectedLab(lab);
+          setActiveAttempt({ _id: "local-attempt-id", status: "in-progress" });
+          return;
+      }
+
       // Start lab attempt
       const attempt = await startLabAttempt(lab._id, roleId);
       setSelectedLab(lab);
@@ -245,6 +280,13 @@ const LabsPage = () => {
   const handleCompleteLab = async (payload) => {
     try {
       console.log("Completing lab with payload:", payload);
+
+      if (activeAttempt?._id === "local-attempt-id") {
+          setActiveAttempt(null);
+          setSelectedLab(null);
+          return;
+      }
+
       const result = await completeLabAttempt(activeAttempt._id, payload);
       setActiveAttempt(null);
       setSelectedLab(null);
