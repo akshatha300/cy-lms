@@ -1,4 +1,4 @@
-import { answerWithRAG } from "../services/ragService.js";
+import { answerWithEnhancedRAG } from "../services/enhancedRagService.js";
 
 export const ragQuery = async (req, res) => {
   try {
@@ -6,7 +6,7 @@ export const ragQuery = async (req, res) => {
 
     if (!query) return res.status(400).json({ message: "Query is required" });
 
-    const response = await answerWithRAG(query);
+    const response = await answerWithEnhancedRAG(query);
     res.json(response);
 
   } catch (error) {

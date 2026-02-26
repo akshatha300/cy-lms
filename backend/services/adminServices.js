@@ -3,8 +3,6 @@ import Progress from "../models/Progress.js";
 import Module from "../models/Module.js";
 import Question from "../models/Questions.js";
 import Attempt from "../models/Attempt.js";
-import Simulation from "../models/simulation.js";
-import PhishAttempt from "../models/PhishAttempt.js";
 
 /**
  * Returns basic platform-wide summary stats.
@@ -77,47 +75,6 @@ export const getModuleMetrics = async () => {
       }
     },
     { $sort: { attempts: -1 } }
-  ]);
-
-  return agg;
-};
-
-/**
- * Phishing-specific metrics: clicks vs reports vs ignored
- */
-export const getPhishingMetrics = async () => {
-  const agg = await PhishAttempt.aggregate([
-    {
-      $group: {
-        _id: "$simulationId",
-        total: { $sum: 1 },
-        clicked: { $sum: { $cond: [{ $eq: ["$action", "clicked"] }, 1, 0] } },
-        reported: { $sum: { $cond: [{ $eq: ["$action", "reported"] }, 1, 0] } },
-        ignored: { $sum: { $cond: [{ $eq: ["$action", "ignored"] }, 1, 0] } }
-      }
-    },
-    {
-      $lookup: {
-        from: "simulations",
-        localField: "_id",
-        foreignField: "_id",
-        as: "simulation"
-      }
-    },
-    { $unwind: { path: "$simulation", preserveNullAndEmptyArrays: true } },
-    {
-      $project: {
-        simulationId: "$_id",
-        title: "$simulation.title",
-        total: 1,
-        clicked: 1,
-        reported: 1,
-        ignored: 1,
-        clickRate: { $cond: [{ $eq: ["$total", 0] }, 0, { $round: [{ $multiply: [{ $divide: ["$clicked", "$total"] }, 100] }, 2] }] },
-        reportRate: { $cond: [{ $eq: ["$total", 0] }, 0, { $round: [{ $multiply: [{ $divide: ["$reported", "$total"] }, 100] }, 2] }] }
-      }
-    },
-    { $sort: { total: -1 } }
   ]);
 
   return agg;

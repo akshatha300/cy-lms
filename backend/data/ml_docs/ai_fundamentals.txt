@@ -1,0 +1,84 @@
+# AI Fundamentals
+
+## What is Artificial Intelligence?
+
+Artificial Intelligence (AI) is the simulation of human intelligence processes by machines, especially computer systems. These processes include learning (the acquisition of information and rules for using the information), reasoning (using rules to reach approximate or definite conclusions), and self-correction.
+
+## Types of AI
+
+### Narrow AI (Weak AI)
+- Designed to perform a specific task
+- Examples: Siri, Alexa, chess-playing computers
+- Limited to the domain it's trained for
+
+### General AI (Strong AI)
+- Hypothetical AI with human-like intelligence
+- Can understand, learn, and apply knowledge across domains
+- Currently theoretical and not yet achieved
+
+### Artificial Superintelligence
+- AI that surpasses human intelligence in all domains
+- Potential future development
+- Subject of ongoing research and debate
+
+## AI Applications
+
+### Healthcare
+- Disease diagnosis and treatment planning
+- Drug discovery and development
+- Medical imaging analysis
+- Personalized medicine
+
+### Finance
+- Fraud detection and prevention
+- Algorithmic trading
+- Risk assessment
+- Customer service automation
+
+### Transportation
+- Autonomous vehicles
+- Traffic optimization
+- Route planning
+- Predictive maintenance
+
+### Entertainment
+- Content recommendation systems
+- Game AI and NPCs
+- Content generation
+- Personalized experiences
+
+## AI Ethics and Safety
+
+### Ethical Considerations
+- Bias in AI systems
+- Privacy concerns
+- Transparency and explainability
+- Accountability and responsibility
+
+### Safety Measures
+- Robust testing and validation
+- Human oversight and control
+- Fail-safe mechanisms
+- Continuous monitoring
+
+## AI vs Machine Learning
+
+While often used interchangeably, AI and ML are related but distinct:
+- AI is the broader concept of machines being able to carry out tasks in a way that we would consider "smart"
+- ML is a current application of AI based around the idea that we should really just be able to give machines access to data and let them learn for themselves
+
+## Future of AI
+
+### Emerging Trends
+- Explainable AI (XAI)
+- AI for scientific discovery
+- Human-AI collaboration
+- Edge AI and IoT integration
+
+### Challenges
+- Technical limitations
+- Ethical and regulatory concerns
+- Workforce displacement and reskilling
+- Global competition and cooperation
+
+AI continues to evolve rapidly, with new breakthroughs and applications emerging regularly. Understanding both the potential and limitations of AI is crucial for responsible development and deployment.

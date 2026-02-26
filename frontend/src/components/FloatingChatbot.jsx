@@ -12,7 +12,7 @@ const FloatingChatbot = () => {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      text: `Hi${user?.name ? ` ${user.name}` : ""}! 👋 I'm your cybersecurity AI tutor. Ask me anything about phishing, malware, network security, or any topic from your modules!`,
+      text: `Hi${user?.name ? ` ${user.name}` : ""}! 👋 I'm your AIML AI tutor. Ask me anything about machine learning, deep learning, data science, or any topic from your modules!`,
     },
   ]);
   const [input, setInput] = useState("");
@@ -197,7 +197,7 @@ const FloatingChatbot = () => {
           </div>
           <div>
             <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>
-              AI Cybersecurity Tutor
+              AIML Tutor
             </h3>
             <p style={{ margin: 0, fontSize: "12px", opacity: 0.9 }}>
               Always here to help
@@ -390,7 +390,7 @@ const FloatingChatbot = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask me anything about cybersecurity..."
+                placeholder="Ask me anything about AIML..."
                 disabled={loading}
                                 style={{
                   flex: 1,

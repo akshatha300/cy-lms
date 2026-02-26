@@ -1,22 +1,25 @@
 import fs from "fs";
 import path from "path";
 import mongoose from "mongoose";
-import DocEmbedding from "../models/DocEmbedding.js";
+import dotenv from "dotenv";
+import Docembbeding from "../models/Docembbeding.js";
 import { generateEmbedding } from "../services/embeddingService.js";
 import connectDB from "../config/db.js";
 
-const docsPath = path.join(process.cwd(), "data/cybersecurity_docs");
+dotenv.config();
+
+const docsPath = path.join(process.cwd(), "data/ml_docs");
 
 const seed = async () => {
   await connectDB();
-  await DocEmbedding.deleteMany({});
+  await Docembbeding.deleteMany({});
 
   const files = fs.readdirSync(docsPath);
   for (let file of files) {
     const text = fs.readFileSync(path.join(docsPath, file), "utf8");
     const embedding = await generateEmbedding(text);
 
-    await DocEmbedding.create({
+    await Docembbeding.create({
       text,
       embedding,
       metadata: { filename: file }

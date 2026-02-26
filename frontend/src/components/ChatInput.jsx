@@ -19,7 +19,7 @@ const ChatInput = ({ onSend }) => {
     >
       <input
         type="text"
-        placeholder="Ask a cybersecurity question..."
+        placeholder="Ask an AIML question..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && handleSend()}

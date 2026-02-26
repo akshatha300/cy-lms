@@ -1,7 +1,6 @@
 import Lab from "../models/Lab.js";
 import LabAttempt from "../models/LabAttempt.js";
 import { recordLabAttempt } from "./skillProgressService.js";
-import { updateJobReadinessScore } from "./jobReadinessService.js";
 
 export const listLabs = async () => {
   return Lab.find({ isActive: true }).sort({ createdAt: -1 });
@@ -62,16 +61,7 @@ export const completeLabAttempt = async (userId, attemptId, data = {}) => {
 
   const progress = await recordLabAttempt(userId, attempt.skillId, attempt._id, status === "success");
 
-  let readiness = null;
-  if (attempt.roleId) {
-    try {
-      readiness = await updateJobReadinessScore(userId, attempt.roleId);
-    } catch (err) {
-      console.error("completeLabAttempt readiness update error:", err);
-    }
-  }
-
-  return { attempt, progress, readiness };
+  return { attempt, progress };
 };
 
 export const listMyLabAttempts = async (userId) => {

@@ -1,7 +1,6 @@
 import {
   getPlatformSummary,
   getModuleMetrics,
-  getPhishingMetrics,
   getLeaderboard,
   getAttemptsTimeSeries
 } from "../services/adminServices.js";
@@ -34,17 +33,6 @@ export const modulesMetrics = async (req, res) => {
     return res.json(data);
   } catch (err) {
     console.error("modulesMetrics err:", err);
-    return res.status(500).json({ message: err.message });
-  }
-};
-
-export const phishingMetrics = async (req, res) => {
-  if (ensureAdmin(req, res)) return;
-  try {
-    const data = await getPhishingMetrics();
-    return res.json(data);
-  } catch (err) {
-    console.error("phishingMetrics err:", err);
     return res.status(500).json({ message: err.message });
   }
 };

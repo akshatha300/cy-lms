@@ -20,6 +20,11 @@ import { useEffect, useState } from "react";
 import KpiBadge from "../../components/KpiBadge";
 import LearningGauge from "../../components/LearningGauge";
 import SectionCard from "../../components/SectionCard";
+import MLProgressTracker from "../../components/MLProgressTracker";
+import AIAnalyticsDashboard from "../../components/AIAnalyticsDashboard";
+import SkillAssessmentDashboard from "../../components/SkillAssessmentDashboard";
+import MLTrainingProgress from "../../components/MLTrainingProgress";
+import "../../debug-auth.js";
 
 const useAnimatedCounter = (endValue, duration = 800) => {
   const [value, setValue] = useState(0);
@@ -48,6 +53,14 @@ const useAnimatedCounter = (endValue, duration = 800) => {
 
 const Dashboard = () => {
   const { user: _user } = useAuth();
+
+  // Debug logging
+  console.log("=== DASHBOARD DEBUG ===");
+  console.log("User object:", _user);
+  console.log("User role:", _user?.role);
+  console.log("User name:", _user?.name);
+  console.log("Is authenticated:", !!_user);
+  console.log("===================");
 
   // Fetch modules and progress data
   const { data: modules = [], isLoading: modulesLoading } = useQuery({
@@ -103,10 +116,10 @@ const Dashboard = () => {
           <div className="flex items-center justify-between gap-8">
             <div className="flex-1">
               <h1 className="text-4xl md:text-5xl font-black mb-4">
-                Learn With Effectively With Us!
+                Learn AIML With Effectively With Us!
               </h1>
               <p className="text-lg text-teal-100 mb-6">
-                Master cybersecurity skills with structured learning paths and hands-on labs. Get 30% off your first role selection.
+                Master machine learning and data science skills with structured learning paths and hands-on labs. Get 30% off your first course selection.
               </p>
               <Link to="/app/role-selector" className="inline-block bg-white text-teal-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition">
                 Explore Roles →
@@ -121,6 +134,89 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Enhanced Dashboard Components */}
+        <MLProgressTracker 
+          progress={progress || {}} 
+          modules={modules || []}
+        />
+        
+        <AIAnalyticsDashboard 
+          analytics={{
+            engagement: 85,
+            improvement: 23,
+            completion: 78,
+            weeklyHours: 12,
+            weeklyGrowth: 15,
+            daysAhead: 3,
+            skillPoints: 145,
+            streak: 7,
+            bestStreak: 14,
+            bestTime: 'Evening',
+            focusDuration: '45 min',
+            quizPerformance: 82,
+            recommendations: [
+              { title: 'Focus on Neural Networks', description: 'Your scores could improve with more practice', priority: 'high' },
+              { title: 'Review Feature Selection', description: 'Key concepts need reinforcement', priority: 'medium' },
+              { title: 'Try Advanced Ensemble Methods', description: 'Ready for next level challenges', priority: 'low' }
+            ]
+          }}
+          userProgress={progress || {}}
+        />
+
+        <SkillAssessmentDashboard 
+          skills={{
+            machineLearning: { score: 85, level: 'advanced' },
+            dataAnalysis: { score: 72, level: 'intermediate' },
+            programming: { score: 90, level: 'expert' },
+            statistics: { score: 68, level: 'intermediate' },
+            deepLearning: { score: 45, level: 'beginner' },
+            featureEngineering: { score: 78, level: 'advanced' }
+          }}
+          assessments={{
+            overallScore: 82,
+            completed: 12,
+            averageScore: 85,
+            improvement: 23
+          }}
+          recommendations={[
+            { title: 'Deep Learning Fundamentals', description: 'Start with basic neural networks', type: 'improvement', action: 'Begin Course' },
+            { title: 'Excellent Programming Skills', description: 'Your Python proficiency is outstanding', type: 'strength', action: 'View Badge' },
+            { title: 'Statistics Refresher', description: 'Brush up on probability concepts', type: 'suggestion', action: 'Review Materials' }
+          ]}
+        />
+
+        <MLTrainingProgress 
+          trainingJobs={[
+            {
+              id: '1',
+              modelName: 'Neural Network Classifier',
+              algorithm: 'CNN',
+              dataset: 'ImageNet',
+              status: 'training',
+              progress: 67,
+              elapsedTime: 2340,
+              estimatedTime: 1200,
+              currentLoss: 0.0234,
+              accuracy: 94.5,
+              currentEpoch: 45,
+              totalEpochs: 100,
+              ETA: 1200
+            }
+          ]}
+          models={[
+            { id: '1', name: 'Random Forest', type: 'Classification', status: 'deployed', accuracy: 92 },
+            { id: '2', name: 'SVM Classifier', type: 'Classification', status: 'training', accuracy: 89 },
+            { id: '3', name: 'Linear Regression', type: 'Regression', status: 'completed', accuracy: 87 }
+          ]}
+          metrics={{
+            cpuUsage: 67,
+            memoryUsage: 8.5,
+            gpuTemp: 72,
+            trainingSpeed: 1250,
+            speedImprovement: 15
+          }}
+        />
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Left Column - Popular Courses (Modules) */}
@@ -254,7 +350,7 @@ const Dashboard = () => {
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="text-2xl font-black mb-2">🔬 Practical Labs</h3>
-                <p className="text-emerald-50 mb-4">Build real-world security skills through hands-on exercises</p>
+                <p className="text-emerald-50 mb-4">Build real-world machine learning and data science skills through hands-on exercises</p>
                 <button className="text-white font-bold group-hover:translate-x-1 transition">Explore Labs →</button>
               </div>
             </div>
@@ -263,8 +359,8 @@ const Dashboard = () => {
           <Link to="/app/chat" className="bg-gradient-to-br from-violet-500 to-purple-600 text-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition group">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-2xl font-black mb-2">💬 AI Tutor</h3>
-                <p className="text-violet-50 mb-4">Get instant explanations and personalized guidance on complex topics</p>
+                <h3 className="text-2xl font-black mb-2">💬 AIML Tutor</h3>
+                <p className="text-violet-50 mb-4">Get instant explanations and personalized guidance on machine learning and data science topics</p>
                 <button className="text-white font-bold group-hover:translate-x-1 transition">Chat Now →</button>
               </div>
             </div>

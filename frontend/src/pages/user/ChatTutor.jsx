@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import useAuth from "../../hooks/useAuth";
 import { sendChatMessage, fetchChatHistory } from "../../api/chatApi";
+import "../../debug-token.js";
 
 const ChatTutor = () => {
   const { user } = useAuth();
@@ -10,7 +11,7 @@ const ChatTutor = () => {
       role: "assistant",
       text: `Hi${
         user?.name ? ` ${user.name}` : ""
-      }! I’m your cybersecurity tutor. Ask me about phishing, passwords, malware, or anything from your modules.`,
+      }! I'm your AIML tutor. Ask me about machine learning, deep learning, data science, or anything from your modules.`,
       meta: { difficulty: "medium" },
     },
   ]);
@@ -135,7 +136,7 @@ const ChatTutor = () => {
     >
       <h2>Chat Tutor</h2>
       <p style={{ color: "#9ca3af", fontSize: "0.9rem" }}>
-        Ask questions about cybersecurity concepts. I’ll tailor answers to your
+        Ask questions about AIML concepts. I'll tailor answers to your
         level.
       </p>
 
@@ -227,7 +228,7 @@ const ChatTutor = () => {
           placeholder={
             loading
               ? "Waiting for tutor response..."
-              : "Type your question about cybersecurity..."
+              : "Type your question about AIML..."
           }
           style={{
             width: "80%",

@@ -4,7 +4,7 @@ import url from "url";
 import { getEmbedding } from "./embeddingService.js";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-const docsPath = path.join(__dirname, "..", "data", "cybersecurity_docs");
+const docsPath = path.join(__dirname, "..", "data", "ml_docs");
 
 const CHUNK_SIZE_CHARS = 1200;
 let indexPromise = null;
