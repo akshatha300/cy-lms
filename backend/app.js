@@ -8,7 +8,6 @@ import authRoutes from "./routes/authRoutes.js";
 import moduleRoutes from "./routes/moduleRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import ragRoutes from "./routes/ragRoutes.js";
-import logRoutes from "./routes/logRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import progressRoutes from "./routes/progressRoutes.js";
 import questionRoutes from "./routes/QuestionRoutes.js";
@@ -19,8 +18,14 @@ import adminRoutes from "./routes/adminRoutes.js";
 import skillRoutes from "./routes/skillRoutes.js";
 import skillProgressRoutes from "./routes/skillProgressRoutes.js";
 import labRoutes from "./routes/labRoutes.js";
+<<<<<<< Updated upstream
 import simpleRoleRoutes from "./routes/simpleRoleRoutes.js";
 import { runCode, evaluateCode, submitLab } from "./controllers/codeExecController.js";
+=======
+import labExecutionRoutes from "./routes/labExecutionRoutes.js";
+import enhancedChatRoutes from "./routes/enhancedChatRoutes.js";
+import basicCareerRoadmapRoutes from "./routes/basicCareerRoadmapRoutes.js";
+>>>>>>> Stashed changes
 
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import logger from "./utils/logger.js";
@@ -29,7 +34,7 @@ const parseAllowedOrigins = () => {
   const raw =
     process.env.CORS_ORIGINS ||
     process.env.CORS_ORIGIN ||
-    "http://localhost:5173,http://127.0.0.1:5173";
+    "http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174";
 
   const origins = raw
     .split(",")
@@ -120,7 +125,6 @@ app.use(
   app.use("/api/modules", moduleRoutes);
   app.use("/api/chat", aiLimiter, chatRoutes);
   app.use("/api/rag", aiLimiter, ragRoutes);
-  app.use("/api/logs", logRoutes);
   app.use("/api/progress", progressRoutes);
   app.use("/api/questions", questionRoutes);
   app.use("/api/attempts", attemptRoutes);
@@ -130,12 +134,18 @@ app.use(
   app.use("/api/skills", skillRoutes);
   app.use("/api/skill-progress", skillProgressRoutes);
   app.use("/api/labs", labRoutes);
+<<<<<<< Updated upstream
   app.use("/api/roles", simpleRoleRoutes);
 
   // Python Code Execution Routes
   app.post("/run", runCode);
   app.post("/evaluate", evaluateCode);
   app.post("/submit", submitLab);
+=======
+  app.use("/api/lab-execution", labExecutionRoutes);
+  app.use("/api/enhanced-chat", enhancedChatRoutes);
+  app.use("/api/career-roadmap", basicCareerRoadmapRoutes);
+>>>>>>> Stashed changes
 
   app.get("/", (req, res) => {
     res.send("AIML Learning Platform Backend Running");

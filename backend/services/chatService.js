@@ -1,8 +1,12 @@
 import { answerWithEnhancedRAG } from "./enhancedRagService.js";
 
 /**
+<<<<<<< Updated upstream
  * AIML tutor powered by Enhanced RAG with Groq LLM.
  * Uses RAG to get context from AIML documents, then applies your prompt structure.
+=======
+ * AIML tutor powered by Groq LLM (no RAG).
+>>>>>>> Stashed changes
  * @param {Object} options
  * @param {string|null} options.userId
  * @param {string} options.message
@@ -47,6 +51,7 @@ export const chatWithTutor = async ({ userId, message, history = [] }) => {
       temperature: 0.3,
     });
 
+<<<<<<< Updated upstream
     // Build your custom prompt with RAG context
     const conversationText = Array.isArray(history)
       ? history.join("\n")
@@ -59,6 +64,15 @@ Use the following context from AIML course materials to answer the student's que
 
 CONTEXT FROM COURSE MATERIALS:
 ${ragResponse.context || "No specific context found."}
+=======
+  const prompt = `
+You are a friendly AIML tutor in an online learning platform.
+You explain concepts clearly for beginners, using simple language and short paragraphs.
+If the student asks about AIML concepts (like machine learning, neural networks, or data science), you:
+- Explain what it is
+- Give 1–2 concrete real-world examples
+- Give 2–3 practical learning tips
+>>>>>>> Stashed changes
 
 CONVERSATION SO FAR:
 ${conversationText}
@@ -80,6 +94,7 @@ RESPONSE GUIDELINES:
 
 Please provide a comprehensive yet accessible answer:`;
 
+<<<<<<< Updated upstream
     // Call Groq API with enhanced prompt
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -103,6 +118,33 @@ Please provide a comprehensive yet accessible answer:`;
         max_tokens: 1500,
       }),
     });
+=======
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a friendly AIML tutor for an online learning platform.",
+            },
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          temperature: 0.4,
+        }),
+      }
+    );
+>>>>>>> Stashed changes
 
     if (!response.ok) {
       const errorText = await response.text();

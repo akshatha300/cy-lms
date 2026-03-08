@@ -1,12 +1,17 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import connectDB from "../config/db.js";
+<<<<<<< Updated upstream
 import Questions from "../models/Questions.js";
+=======
+import Question from "../models/Questions.js";
+>>>>>>> Stashed changes
 import Module from "../models/Module.js";
 
 dotenv.config();
 await connectDB();
 
+<<<<<<< Updated upstream
 const aimlQuestions = [
   // Unit-I: Introduction to Machine Learning Questions
   {
@@ -390,3 +395,422 @@ async function seedAIMLQuestions() {
 }
 
 seedAIMLQuestions();
+=======
+const seedAIMLQuestionsFixed = async () => {
+  try {
+    console.log("📝 Starting AIML questions seed (Fixed)...\n");
+
+    // Clear existing questions
+    await Question.deleteMany({});
+    console.log("🗑️ Cleared existing questions");
+
+    // Get modules
+    const modules = await Module.find();
+    console.log(`✅ Found ${modules.length} modules`);
+
+    if (modules.length === 0) {
+      console.log("❌ No modules found. Please seed modules first.");
+      return;
+    }
+
+    const questionsData = [];
+
+    // Questions for first 5 modules
+    for (let i = 0; i < Math.min(5, modules.length); i++) {
+      const module = modules[i];
+      
+      if (i === 0) { // Introduction to Machine Learning
+        questionsData.push(
+          {
+            moduleId: module._id,
+            questionText: "What is the primary goal of machine learning?",
+            options: [
+              "To program computers explicitly",
+              "To enable computers to learn from data", 
+              "To create artificial intelligence",
+              "To replace human programmers"
+            ],
+            correctAnswer: "B",
+            explanation: "Machine learning aims to enable computers to learn patterns from data without being explicitly programmed.",
+            difficulty: 1,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "Which type of learning uses labeled data for training?",
+            options: [
+              "Unsupervised learning",
+              "Reinforcement learning", 
+              "Supervised learning",
+              "Semi-supervised learning"
+            ],
+            correctAnswer: "C",
+            explanation: "Supervised learning uses labeled data where the algorithm learns from input-output pairs.",
+            difficulty: 1,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "What is overfitting in machine learning?",
+            options: [
+              "When a model performs well on training data but poorly on new data",
+              "When a model performs poorly on training data",
+              "When a model has too few parameters",
+              "When a model converges too quickly"
+            ],
+            correctAnswer: "A",
+            explanation: "Overfitting occurs when a model learns the training data too well and fails to generalize to new, unseen data.",
+            difficulty: 2,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "Which algorithm is commonly used for classification tasks?",
+            options: [
+              "Linear regression",
+              "K-means clustering",
+              "Decision trees",
+              "Principal Component Analysis"
+            ],
+            correctAnswer: "C",
+            explanation: "Decision trees are widely used for classification tasks due to their interpretability and ability to handle both numerical and categorical data.",
+            difficulty: 1,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "What is the purpose of cross-validation?",
+            options: [
+              "To increase model accuracy",
+              "To evaluate model generalization",
+              "To reduce training time",
+              "To create more features"
+            ],
+            correctAnswer: "B",
+            explanation: "Cross-validation helps evaluate how well a model will generalize to new, unseen data by using multiple train-test splits.",
+            difficulty: 2,
+            type: "mcq"
+          }
+        );
+      } else if (i === 1) { // Supervised Learning
+        questionsData.push(
+          {
+            moduleId: module._id,
+            questionText: "What is the main difference between classification and regression?",
+            options: [
+              "Number of features",
+              "Type of output variable",
+              "Training algorithm",
+              "Data preprocessing"
+            ],
+            correctAnswer: "B",
+            explanation: "Classification predicts discrete class labels, while regression predicts continuous numerical values.",
+            difficulty: 1,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "Which algorithm is non-parametric?",
+            options: [
+              "Linear regression",
+              "Logistic regression",
+              "K-Nearest Neighbors",
+              "Naive Bayes"
+            ],
+            correctAnswer: "C",
+            explanation: "K-Nearest Neighbors is non-parametric as it doesn't make assumptions about the underlying data distribution.",
+            difficulty: 2,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "What is the purpose of the activation function in a neural network?",
+            options: [
+              "To normalize inputs",
+              "To introduce non-linearity",
+              "To regularize the model",
+              "To speed up training"
+            ],
+            correctAnswer: "B",
+            explanation: "Activation functions introduce non-linearity, allowing neural networks to learn complex patterns.",
+            difficulty: 2,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "Which metric is used to evaluate binary classification?",
+            options: [
+              "Mean squared error",
+              "R-squared",
+              "Accuracy",
+              "Silhouette score"
+            ],
+            correctAnswer: "C",
+            explanation: "Accuracy is a common metric for evaluating binary classification performance, measuring the proportion of correct predictions.",
+            difficulty: 1,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "What is bagging in ensemble learning?",
+            options: [
+              "Training models sequentially",
+              "Training models in parallel on bootstrap samples",
+              "Combining different algorithms",
+              "Weighting models by performance"
+            ],
+            correctAnswer: "B",
+            explanation: "Bagging (Bootstrap Aggregating) trains multiple models in parallel on different bootstrap samples of the training data.",
+            difficulty: 3,
+            type: "mcq"
+          }
+        );
+      } else if (i === 2) { // Unsupervised Learning
+        questionsData.push(
+          {
+            moduleId: module._id,
+            questionText: "What is the primary goal of clustering?",
+            options: [
+              "To predict labels",
+              "To group similar data points",
+              "To reduce dimensions",
+              "To classify data"
+            ],
+            correctAnswer: "B",
+            explanation: "Clustering aims to group similar data points together while keeping dissimilar points in different groups.",
+            difficulty: 1,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "Which clustering algorithm requires the number of clusters to be specified?",
+            options: [
+              "DBSCAN",
+              "Hierarchical clustering",
+              "K-means",
+              "Mean shift"
+            ],
+            correctAnswer: "C",
+            explanation: "K-means requires the number of clusters (k) to be specified before the algorithm starts.",
+            difficulty: 1,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "What is the elbow method used for?",
+            options: [
+              "Determining optimal number of clusters",
+              "Evaluating clustering quality",
+              "Selecting features",
+              "Normalizing data"
+            ],
+            correctAnswer: "A",
+            explanation: "The elbow method helps determine the optimal number of clusters by plotting the within-cluster sum of squares against the number of clusters.",
+            difficulty: 2,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "Which dimensionality reduction technique is linear?",
+            options: [
+              "t-SNE",
+              "UMAP",
+              "PCA",
+              "Isomap"
+            ],
+            correctAnswer: "C",
+            explanation: "Principal Component Analysis (PCA) is a linear dimensionality reduction technique.",
+            difficulty: 2,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "What does PCA stand for?",
+            options: [
+              "Principal Component Analysis",
+              "Principal Correlation Analysis",
+              "Primary Component Analysis",
+              "Predictive Component Analysis"
+            ],
+            correctAnswer: "A",
+            explanation: "PCA stands for Principal Component Analysis, a technique for dimensionality reduction.",
+            difficulty: 1,
+            type: "mcq"
+          }
+        );
+      } else if (i === 3) { // Neural Networks
+        questionsData.push(
+          {
+            moduleId: module._id,
+            questionText: "What is a neuron in a neural network?",
+            options: [
+              "A storage unit",
+              "A computational unit that receives inputs and produces an output",
+              "A data preprocessing unit",
+              "A visualization tool"
+            ],
+            correctAnswer: "B",
+            explanation: "A neuron is a computational unit that receives inputs, applies weights and activation function, and produces an output.",
+            difficulty: 1,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "What is backpropagation used for?",
+            options: [
+              "Forward propagation",
+              "Training neural networks by updating weights",
+              "Data normalization",
+              "Feature selection"
+            ],
+            correctAnswer: "B",
+            explanation: "Backpropagation is an algorithm used to train neural networks by calculating gradients and updating weights.",
+            difficulty: 2,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "Which activation function is most commonly used in hidden layers?",
+            options: [
+              "Sigmoid",
+              "Tanh",
+              "ReLU",
+              "Linear"
+            ],
+            correctAnswer: "C",
+            explanation: "ReLU (Rectified Linear Unit) is the most commonly used activation function in hidden layers due to its simplicity and effectiveness.",
+            difficulty: 1,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "What is the vanishing gradient problem?",
+            options: [
+              "Gradients become too large",
+              "Gradients become very small during backpropagation",
+              "Gradients disappear completely",
+              "Gradients change direction randomly"
+            ],
+            correctAnswer: "B",
+            explanation: "The vanishing gradient problem occurs when gradients become very small during backpropagation, making it difficult to train deep networks.",
+            difficulty: 3,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "What is the purpose of the loss function?",
+            options: [
+              "To normalize data",
+              "To measure how well the model is performing",
+              "To increase model complexity",
+              "To reduce overfitting"
+            ],
+            correctAnswer: "B",
+            explanation: "The loss function measures how well the model is performing by calculating the difference between predicted and actual values.",
+            difficulty: 1,
+            type: "mcq"
+          }
+        );
+      } else if (i === 4) { // Ensemble Techniques
+        questionsData.push(
+          {
+            moduleId: module._id,
+            questionText: "What is the main idea behind ensemble methods?",
+            options: [
+              "Using multiple models to improve performance",
+              "Training a single large model",
+              "Reducing model complexity",
+              "Increasing training speed"
+            ],
+            correctAnswer: "A",
+            explanation: "Ensemble methods combine multiple models to produce better predictive performance than any single model alone.",
+            difficulty: 1,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "Which ensemble method trains models sequentially?",
+            options: [
+              "Bagging",
+              "Random Forest",
+              "Boosting",
+              "Stacking"
+            ],
+            correctAnswer: "C",
+            explanation: "Boosting trains models sequentially, with each new model focusing on the errors of the previous ones.",
+            difficulty: 2,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "What is Random Forest?",
+            options: [
+              "A single decision tree",
+              "An ensemble of decision trees",
+              "A clustering algorithm",
+              "A dimensionality reduction technique"
+            ],
+            correctAnswer: "B",
+            explanation: "Random Forest is an ensemble learning method that constructs multiple decision trees during training.",
+            difficulty: 1,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "Which technique combines different types of models?",
+            options: [
+              "Bagging",
+              "Boosting",
+              "Stacking",
+              "Random Forest"
+            ],
+            correctAnswer: "C",
+            explanation: "Stacking (Stacked Generalization) combines different types of models by training a meta-model on their predictions.",
+            difficulty: 3,
+            type: "mcq"
+          },
+          {
+            moduleId: module._id,
+            questionText: "What is the main advantage of AdaBoost?",
+            options: [
+              "It's very fast",
+              "It reduces bias",
+              "It handles missing well",
+              "It's easy to interpret"
+            ],
+            correctAnswer: "B",
+            explanation: "AdaBoost primarily reduces bias by focusing on misclassified examples in subsequent iterations.",
+            difficulty: 3,
+            type: "mcq"
+          }
+        );
+      }
+    }
+
+    // Insert questions
+    const createdQuestions = await Question.insertMany(questionsData);
+    console.log(`✅ Created ${createdQuestions.length} AIML questions`);
+
+    // Display created questions
+    console.log("\n📝 Created Questions Summary:");
+    for (let i = 0; i < Math.min(5, modules.length); i++) {
+      const module = modules[i];
+      const moduleQuestions = createdQuestions.filter(q => 
+        q.moduleId.toString() === module._id.toString()
+      );
+      console.log(`${i + 1}. ${module.title}: ${moduleQuestions.length} questions`);
+    }
+
+    console.log("\n🎉 AIML questions seeding completed successfully!");
+    
+  } catch (error) {
+    console.error("❌ Error seeding AIML questions:", error);
+  } finally {
+    await mongoose.connection.close();
+    process.exit(0);
+  }
+};
+
+// Run the seed function
+seedAIMLQuestionsFixed();
+>>>>>>> Stashed changes

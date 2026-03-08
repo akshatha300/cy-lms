@@ -1,12 +1,17 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import connectDB from "../config/db.js";
+<<<<<<< Updated upstream
 import Questions from "../models/Questions.js";
+=======
+import Question from "../models/Questions.js";
+>>>>>>> Stashed changes
 import Module from "../models/Module.js";
 
 dotenv.config();
 await connectDB();
 
+<<<<<<< Updated upstream
 const aimlQuestions = [
   // Unit-I: Introduction to Machine Learning Questions
   {
@@ -390,4 +395,314 @@ async function seedAIMLQuestions() {
   }
 }
 
+=======
+const seedAIMLQuestions = async () => {
+  try {
+    console.log("📝 Starting AIML questions seed...\n");
+
+    // Clear existing questions
+    await Question.deleteMany({});
+    console.log("🗑️ Cleared existing questions");
+
+    // Get modules
+    const modules = await Module.find();
+    console.log(`✅ Found ${modules.length} modules`);
+
+    if (modules.length === 0) {
+      console.log("❌ No modules found. Please seed modules first.");
+      return;
+    }
+
+    const questionsData = [];
+
+    // Questions for Module 1: Introduction to Machine Learning
+    if (modules[0]) {
+      questionsData.push(
+        {
+          moduleId: modules[0]._id,
+          questionText: "What is the primary goal of machine learning?",
+          options: [
+            "To program computers explicitly",
+            "To enable computers to learn from data", 
+            "To create artificial intelligence",
+            "To replace human programmers"
+          ],
+          correctAnswer: "B",
+          explanation: "Machine learning aims to enable computers to learn patterns from data without being explicitly programmed.",
+          difficulty: 1,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[0]._id,
+          questionText: "Which type of learning uses labeled data for training?",
+          options: [
+            "Unsupervised learning",
+            "Reinforcement learning", 
+            "Supervised learning",
+            "Semi-supervised learning"
+          ],
+          correctAnswer: "C",
+          explanation: "Supervised learning uses labeled data where the algorithm learns from input-output pairs.",
+          difficulty: 1,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[0]._id,
+          questionText: "What is overfitting in machine learning?",
+          optionsText: "A. When a model performs well on training data but poorly on new data,B. When a model performs poorly on training data,C. When a model has too few parameters,D. When a model converges too quickly",
+          correctAnswer: "A",
+          explanation: "Overfitting occurs when a model learns the training data too well and fails to generalize to new, unseen data.",
+          difficulty: 2,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[0]._id,
+          questionText: "Which algorithm is commonly used for classification tasks?",
+          optionsText: "A. Linear regression,B. K-means clustering,C. Decision trees,D. Principal Component Analysis",
+          correctAnswer: "C",
+          explanation: "Decision trees are widely used for classification tasks due to their interpretability and ability to handle both numerical and categorical data.",
+          difficulty: 1,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[0]._id,
+          questionText: "What is the purpose of cross-validation?",
+          optionsText: "A. To increase model accuracy,B. To evaluate model generalization,C. To reduce training time,D. To create more features",
+          correctAnswer: "B",
+          explanation: "Cross-validation helps evaluate how well a model will generalize to new, unseen data by using multiple train-test splits.",
+          difficulty: 2,
+          type: "mcq"
+        }
+      );
+    }
+
+    // Questions for Module 2: Feature Selection Techniques
+    if (modules[1]) {
+      questionsData.push(
+        {
+          moduleId: modules[1]._id,
+          questionText: "What is feature selection?",
+          optionsText: "A. Creating new features from existing ones,B. Selecting the most relevant features for the model,C. Removing all features,D. Normalizing feature values",
+          correctAnswer: "B",
+          explanation: "Feature selection is the process of selecting a subset of relevant features for use in model construction.",
+          difficulty: 1,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[1]._id,
+          questionText: "Which method removes features based on their statistical properties?",
+          optionsText: "A. Wrapper methods,B. Filter methods,C. Embedded methods,D. Ensemble methods",
+          correctAnswer: "B",
+          explanation: "Filter methods evaluate features based on their statistical properties like correlation, chi-square, or information gain.",
+          difficulty: 2,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[1]._id,
+          questionText: "What is the curse of dimensionality?",
+          optionsText: "A. Having too few features,B. Having too many features relative to samples,C. Having categorical features,D. Having missing values",
+          correctAnswer: "B",
+          explanation: "The curse of dimensionality refers to various phenomena that arise when analyzing and organizing data in high-dimensional spaces.",
+          difficulty: 3,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[1]._id,
+          questionText: "Which technique uses the machine learning model to score feature subsets?",
+          optionsText: "A. Filter methods,B. Wrapper methods,C. Statistical methods,D. Domain knowledge methods",
+          correctAnswer: "B",
+          explanation: "Wrapper methods use the predictive power of a machine learning model to score and select feature subsets.",
+          difficulty: 2,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[1]._id,
+          questionText: "What is Lasso regression primarily used for?",
+          optionsText: "A. Classification,B. Clustering,C. Feature selection,D. Dimensionality reduction",
+          correctAnswer: "C",
+          explanation: "Lasso regression (L1 regularization) is commonly used for feature selection as it can shrink some coefficients to exactly zero.",
+          difficulty: 2,
+          type: "mcq"
+        }
+      );
+    }
+
+    // Questions for Module 3: Supervised Machine Learning
+    if (modules[2]) {
+      questionsData.push(
+        {
+          moduleId: modules[2]._id,
+          questionText: "What is the main difference between classification and regression?",
+          optionsText: "A. Number of features,B. Type of output variable,C. Training algorithm,D. Data preprocessing",
+          correctAnswer: "B",
+          explanation: "Classification predicts discrete class labels, while regression predicts continuous numerical values.",
+          difficulty: 1,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[2]._id,
+          questionText: "Which algorithm is non-parametric?",
+          optionsText: "A. Linear regression,B. Logistic regression,C. K-Nearest Neighbors,D. Naive Bayes",
+          correctAnswer: "C",
+          explanation: "K-Nearest Neighbors is non-parametric as it doesn't make assumptions about the underlying data distribution.",
+          difficulty: 2,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[2]._id,
+          questionText: "What is the purpose of the activation function in a neural network?",
+          optionsText: "A. To normalize inputs,B. To introduce non-linearity,C. To regularize the model,D. To speed up training",
+          correctAnswer: "B",
+          explanation: "Activation functions introduce non-linearity, allowing neural networks to learn complex patterns.",
+          difficulty: 2,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[2]._id,
+          questionText: "Which metric is used to evaluate binary classification?",
+          optionsText: "A. Mean squared error,B. R-squared,C. Accuracy,D. Silhouette score",
+          correctAnswer: "C",
+          explanation: "Accuracy is a common metric for evaluating binary classification performance, measuring the proportion of correct predictions.",
+          difficulty: 1,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[2]._id,
+          questionText: "What is bagging in ensemble learning?",
+          optionsText: "A. Training models sequentially,B. Training models in parallel on bootstrap samples,C. Combining different algorithms,D. Weighting models by performance",
+          correctAnswer: "B",
+          explanation: "Bagging (Bootstrap Aggregating) trains multiple models in parallel on different bootstrap samples of the training data.",
+          difficulty: 3,
+          type: "mcq"
+        }
+      );
+    }
+
+    // Questions for Module 4: Unsupervised Machine Learning
+    if (modules[3]) {
+      questionsData.push(
+        {
+          moduleId: modules[3]._id,
+          questionText: "What is the primary goal of clustering?",
+          optionsText: "A. To predict labels,B. To group similar data points,C. To reduce dimensions,D. To classify data",
+          correctAnswer: "B",
+          explanation: "Clustering aims to group similar data points together while keeping dissimilar points in different groups.",
+          difficulty: 1,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[3]._id,
+          questionText: "Which clustering algorithm requires the number of clusters to be specified?",
+          optionsText: "A. DBSCAN,B. Hierarchical clustering,C. K-means,D. Mean shift",
+          correctAnswer: "C",
+          explanation: "K-means requires the number of clusters (k) to be specified before the algorithm starts.",
+          difficulty: 1,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[3]._id,
+          questionText: "What is the elbow method used for?",
+          optionsText: "A. Determining optimal number of clusters,B. Evaluating clustering quality,C. Selecting features,D. Normalizing data",
+          correctAnswer: "A",
+          explanation: "The elbow method helps determine the optimal number of clusters by plotting the within-cluster sum of squares against the number of clusters.",
+          difficulty: 2,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[3]._id,
+          questionText: "Which dimensionality reduction technique is linear?",
+          optionsText: "A. t-SNE,B. UMAP,C. PCA,D. Isomap",
+          correctAnswer: "C",
+          explanation: "Principal Component Analysis (PCA) is a linear dimensionality reduction technique.",
+          difficulty: 2,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[3]._id,
+          questionText: "What does PCA stand for?",
+          optionsText: "A. Principal Component Analysis,B. Principal Correlation Analysis,C. Primary Component Analysis,D. Predictive Component Analysis",
+          correctAnswer: "A",
+          explanation: "PCA stands for Principal Component Analysis, a technique for dimensionality reduction.",
+          difficulty: 1,
+          type: "mcq"
+        }
+      );
+    }
+
+    // Questions for Module 5: Ensemble Techniques
+    if (modules[4]) {
+      questionsData.push(
+        {
+          moduleId: modules[4]._id,
+          questionText: "What is the main idea behind ensemble methods?",
+          optionsText: "A. Using multiple models to improve performance,B. Training a single large model,C. Reducing model complexity,D. Increasing training speed",
+          correctAnswer: "A",
+          explanation: "Ensemble methods combine multiple models to produce better predictive performance than any single model alone.",
+          difficulty: 1,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[4]._id,
+          questionText: "Which ensemble method trains models sequentially?",
+          optionsText: "A. Bagging,B. Random Forest,C. Boosting,D. Stacking",
+          correctAnswer: "C",
+          explanation: "Boosting trains models sequentially, with each new model focusing on the errors of the previous ones.",
+          difficulty: 2,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[4]._id,
+          questionText: "What is Random Forest?",
+          optionsText: "A. A single decision tree,B. An ensemble of decision trees,C. A clustering algorithm,D. A dimensionality reduction technique",
+          correctAnswer: "B",
+          explanation: "Random Forest is an ensemble learning method that constructs multiple decision trees during training.",
+          difficulty: 1,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[4]._id,
+          questionText: "Which technique combines different types of models?",
+          optionsText: "A. Bagging,B. Boosting,C. Stacking,D. Random Forest",
+          correctAnswer: "C",
+          explanation: "Stacking (Stacked Generalization) combines different types of models by training a meta-model on their predictions.",
+          difficulty: 3,
+          type: "mcq"
+        },
+        {
+          moduleId: modules[4]._id,
+          questionText: "What is the main advantage of AdaBoost?",
+          optionsText: "A. It's very fast,B. It reduces bias,C. It handles missing well,D. It's easy to interpret",
+          correctAnswer: "B",
+          explanation: "AdaBoost primarily reduces bias by focusing on misclassified examples in subsequent iterations.",
+          difficulty: 3,
+          type: "mcq"
+        }
+      );
+    }
+
+    // Insert questions
+    const createdQuestions = await Question.insertMany(questionsData);
+    console.log(`✅ Created ${createdQuestions.length} AIML questions`);
+
+    // Display created questions
+    console.log("\n📝 Created Questions Summary:");
+    modules.forEach((module, index) => {
+      const moduleQuestions = createdQuestions.filter(q => 
+        q.moduleId.toString() === module._id.toString()
+      );
+      console.log(`${index + 1}. ${module.title}: ${moduleQuestions.length} questions`);
+    });
+
+    console.log("\n🎉 AIML questions seeding completed successfully!");
+    
+  } catch (error) {
+    console.error("❌ Error seeding AIML questions:", error);
+  } finally {
+    await mongoose.connection.close();
+    process.exit(0);
+  }
+};
+
+// Run the seed function
+>>>>>>> Stashed changes
 seedAIMLQuestions();

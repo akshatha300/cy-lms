@@ -15,7 +15,7 @@ const Navbar = () => {
         color: "white",
       }}
     >
-      <h3>Cyber LMS</h3>
+      <h3>AIML Learning Platform</h3>
 
       <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
         <Link to="/app" style={{ color: "white" }}>

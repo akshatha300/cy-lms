@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import useAuth from "../../hooks/useAuth";
 import { sendChatMessage, fetchChatHistory } from "../../api/chatApi";
-import "../../debug-token.js";
 
 const ChatTutor = () => {
   const { user } = useAuth();
@@ -11,7 +10,7 @@ const ChatTutor = () => {
       role: "assistant",
       text: `Hi${
         user?.name ? ` ${user.name}` : ""
-      }! I'm your AIML tutor. Ask me about machine learning, deep learning, data science, or anything from your modules.`,
+      }! I'm your AIML tutor. Ask me about machine learning, neural networks, data science, or anything from your modules.`,
       meta: { difficulty: "medium" },
     },
   ]);

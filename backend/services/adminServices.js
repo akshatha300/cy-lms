@@ -12,15 +12,13 @@ export const getPlatformSummary = async () => {
   const totalModulesPromise = Module.countDocuments();
   const totalQuestionsPromise = Question.countDocuments();
   const totalAttemptsPromise = Attempt.countDocuments();
-  const totalSimulationsPromise = Simulation.countDocuments();
 
-  const [totalUsers, totalModules, totalQuestions, totalAttempts, totalSimulations] =
+  const [totalUsers, totalModules, totalQuestions, totalAttempts] =
     await Promise.all([
       totalUsersPromise,
       totalModulesPromise,
       totalQuestionsPromise,
-      totalAttemptsPromise,
-      totalSimulationsPromise
+      totalAttemptsPromise
     ]);
 
   // Average accuracy across users
@@ -30,7 +28,7 @@ export const getPlatformSummary = async () => {
   ]);
   const avgAccuracy = avgAccuracyAgg[0]?.avgAccuracy ?? 0;
 
-  return { totalUsers, totalModules, totalQuestions, totalAttempts, totalSimulations, avgAccuracy: Math.round(avgAccuracy * 100) / 100 };
+  return { totalUsers, totalModules, totalQuestions, totalAttempts, avgAccuracy: Math.round(avgAccuracy * 100) / 100 };
 };
 
 /**

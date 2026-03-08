@@ -3,7 +3,7 @@ import LabAttempt from "../models/LabAttempt.js";
 import { recordLabAttempt } from "./skillProgressService.js";
 
 export const listLabs = async () => {
-  return Lab.find({ isActive: true }).sort({ createdAt: -1 });
+  return Lab.find({}).sort({ createdAt: -1 });
 };
 
 export const getLab = async (labId) => {
