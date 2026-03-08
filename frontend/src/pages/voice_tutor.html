@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI Voice Tutor</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9fafb;
+}
+h2 {
+    text-align: center;
+    color: #1f2937;
+    margin-bottom: 30px;
+}
+button {
+    display: block;
+    margin: 0 auto 30px;
+    padding: 15px 30px;
+    font-size: 18px;
+    
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+button:hover {
+    background-color: #2563eb;
+    transform: scale(1.05);
+}
+button:disabled {
+    background-color: #6b7280;
+    cursor: not-allowed;
+    transform: scale(1);
+}
+.question-box, .answer-box {
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+.question-box {
+    background-color: #f8fafc;
+}
+.answer-box {
+    background-color: #f0f9ff;
+}
+#question, #answer {
+    min-height: 60px;
+    color: #4b5563;
+    font-style: italic;
+    opacity: 0.6;
+}
+#question:not(:empty), #answer:not(:empty) {
+    font-style: normal;
+    opacity: 1;
+}
+.error {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+</style>
+</head>
+
+<body>
+
+<h2>AI Voice Tutor</h2>
+
+<button onclick="startListening()">🎤 Ask Question</button>
+
+<div class="question-box">
+<p><b>Your Question:</b></p>
+<p id="question"></p>
+</div>
+
+<div class="answer-box">
+<p><b>AI Response:</b></p>
+<p id="answer"></p>
+</div>
+
+<!-- Debug Section -->
+<div class="debug-box">
+<h4 style="margin-top: 0; color: #856404;">Debug Information:</h4>
+<p id="debug">Loading debug info...</p>
+<button onclick="clearDebug()" style="margin-top: 10px; padding: 5px 10px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Clear Debug</button>
+</div>
+
+<script>
+function clearDebug() {
+    document.getElementById('debug').innerHTML = 'Debug cleared...';
+}
+</script>
+
+<script src="voice.js"></script>
+
+</body>
+</html>
