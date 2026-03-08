@@ -18,14 +18,9 @@ import adminRoutes from "./routes/adminRoutes.js";
 import skillRoutes from "./routes/skillRoutes.js";
 import skillProgressRoutes from "./routes/skillProgressRoutes.js";
 import labRoutes from "./routes/labRoutes.js";
-<<<<<<< Updated upstream
-import simpleRoleRoutes from "./routes/simpleRoleRoutes.js";
-import { runCode, evaluateCode, submitLab } from "./controllers/codeExecController.js";
-=======
 import labExecutionRoutes from "./routes/labExecutionRoutes.js";
 import enhancedChatRoutes from "./routes/enhancedChatRoutes.js";
 import basicCareerRoadmapRoutes from "./routes/basicCareerRoadmapRoutes.js";
->>>>>>> Stashed changes
 
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import logger from "./utils/logger.js";
@@ -134,18 +129,9 @@ app.use(
   app.use("/api/skills", skillRoutes);
   app.use("/api/skill-progress", skillProgressRoutes);
   app.use("/api/labs", labRoutes);
-<<<<<<< Updated upstream
-  app.use("/api/roles", simpleRoleRoutes);
-
-  // Python Code Execution Routes
-  app.post("/run", runCode);
-  app.post("/evaluate", evaluateCode);
-  app.post("/submit", submitLab);
-=======
-  app.use("/api/lab-execution", labExecutionRoutes);
+app.use("/api/lab-execution", labExecutionRoutes);
   app.use("/api/enhanced-chat", enhancedChatRoutes);
   app.use("/api/career-roadmap", basicCareerRoadmapRoutes);
->>>>>>> Stashed changes
 
   app.get("/", (req, res) => {
     res.send("AIML Learning Platform Backend Running");
